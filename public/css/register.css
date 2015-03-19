@@ -1,0 +1,14 @@
+body {
+  padding-top: 80px;
+  height: 100%;
+  width: 100%;
+}
+
+.container{
+  width: 80%;
+  max-width: 550px;
+}
+
+.btn-primary{
+  width: 100%;
+}

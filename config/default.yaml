@@ -1,0 +1,28 @@
+cookie:
+  secret: 'REPLACE SECRET IN DEVELOPMENT.YAML'
+session:
+  secret: 'REPLACE SECRET IN DEVELOPMENT.YAML'
+base:
+    path: ''
+db:
+  host: 'localhost'
+  user: 'root'
+  password: ''
+  database: 'aspen'
+compile:
+  host: 'localhost'
+  port: 3000
+  path: '/dummy/compile'
+poplar:
+  host: 'localhost'
+  port: 3000
+  path: '/dummy/poplar'
+activity:
+  host: 'localhost'
+  port: 3000
+  path: '/dummy/activity'
+passport:
+  host_url: ''
+  github:
+    client_id: ''
+    client_secret: ''

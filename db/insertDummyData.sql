@@ -1,0 +1,13 @@
+INSERT INTO Lectures (name, updatedAt) VALUES ("プログラミング入門", NOW());
+INSERT INTO LecturesUsers (LectureId, UserId, updatedAt) VALUES (1, 1, NOW());
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 2);
+INSERT INTO Subjects (name, content, LectureId) VALUES ("HelloWorld", "//HelloWorldを出力せよ", 1);
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 1);
+INSERT INTO Subjects (name, content, LectureId) VALUES ("四則演算", "//四則演算せよ", 1);
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 2);
+INSERT INTO Subjects (name, content, LectureId) VALUES ("関数", "//二つの引数の値を足したものを出力する関数を作成せよ", 1);
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 3);
+INSERT INTO Subjects (name, content, LectureId) VALUES ("sort", "//バブルソートを行い、結果を出力する関数を作成せよ", 1);
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 4);
+INSERT INTO Subjects (name, content, LectureId) VALUES ("fib", "//フィボナッチ数列のn番目の値を求める関数を作成せよ", 1);
+INSERT INTO SubmitStatuses (id, UserId, SubjectId) VALUES (1, 1, 5);

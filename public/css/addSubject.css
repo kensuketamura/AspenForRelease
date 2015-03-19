@@ -1,0 +1,18 @@
+body {
+  padding-top: 50px;
+  text-align: left;
+}
+
+.container{
+  width: 80%;
+}
+
+.btn-primary{
+  height: 70px;
+  width: 100%;
+  font-size: 24px;
+}
+
+.main-view{
+  transition: all .2s cubic-bezier(.4,0,.2,1);
+}

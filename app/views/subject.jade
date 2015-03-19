@@ -1,0 +1,42 @@
+extends layout
+
+block header
+  +css('/css/index.css')
+  +css('/css/addSubject.css')
+  include editor_css
+  style.
+    .markdown{
+      margin-top: 50px;
+    }
+
+block loadFiles
+    +js('/vendor/ace/src/ace.js')
+    +js('/vendor/markdownjs/markdown.js')
+    +js('/js/subject_submit.js')
+
+block content
+  include topbar
+  .container
+    .main-view
+      h1 課題登録
+      form(role="form", action="#{basePath}/subject/new", method="POST", id="subject_form", onsubmit="return postData();")
+        .form-group
+          label.control-label(for="inputNumber") 課題名
+          input.form-control(type="text", placeholder="", name="name", id="name", value="#{name}", required autofocus)
+        //.form-group
+        //  label.control-label(for="inputName") URL
+        //  input.form-control(type="text", placeholder="", name="url", id="url", required)
+        .form-group
+          label.control-label(for="inputName") 提出期限
+          input.form-control(type="date", placeholder="", name="limit", id="limit", value="#{endAt}", required)
+        .form-group
+          label.control-label(for="inputName") 問題文
+          p
+            pre#markdownEditor(rows="5", name="example", style="width:100%;height:85px")= example
+        .form-group
+          label.control-label(for="inputName") エディタの初期値
+          p
+            pre#editor(rows="20", name="content", style="width:100%;")= content
+        .form-group
+          button.btn.btn-primary.pull-right(type="submit") 作成
+  include sidebar_subject

@@ -1,0 +1,46 @@
+extends layout
+
+//- var tableHead = new Array("課題名", "提出状況", "締切");
+//- var data = new Array([0, "function", "未提出", "14/10/11"], [1, "sort", "未提出", "14/10/04"], [2, "fib", "提出済", "14/10/04"]);
+
+block header
+  meta(http-equiv="Pragma", content="no-cache")
+  meta(http-equiv="Cache-Control", content="no-cache")
+  meta(http-equiv="Expires", content="0")
+  +css('/css/index.css')
+  style.
+    .site-wrapper {
+      padding-top: 3em;
+    }
+
+block loadFiles
+    +js('/js/mypage.js')
+    +js('/vendor/jquery/jquery.tablesorter.js')
+
+block content
+  .site-wrapper
+    .site-wrapper-inner-center-off
+      .cover-container
+        include topbar
+        .inner.cover.shadow-off
+          .inner
+            .row(style="padding-bottom: 5px;")
+              .col-sm-10.col-sm-offset-1
+                a.btn.btn-success.pull-right(href="#{basePath}/editor") 練習
+            .row
+              .col-sm-10.col-sm-offset-1
+                table.table.table-hover(id="myDataTable")
+                  thead
+                    tr
+                    - for(var i = 0; i < tableHead.length; i++){
+                      th #{tableHead[i]}
+                    - }
+                  tbody
+                    - for(var i = 0; i < submits.length; i++){
+                      tr(class="#{submits[i].cl}", id="#{submits[i].id}", style="cursor: pointer;")
+                        td.subjectInList #{submits[i].name}
+                        td.subjectInList #{submits[i].status}
+                        td.subjectInList #{submits[i].endAt}
+                    - }
+        .mastfoot
+          .inner

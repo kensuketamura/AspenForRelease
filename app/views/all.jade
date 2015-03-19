@@ -1,0 +1,69 @@
+extends layout
+
+block header
+  +css('/css/index.css')
+  +css('/css/editor.css')
+  style.
+    .site-wrapper {
+      padding-top: 3em;
+    }
+
+block loadFiles
+  +js('/js/submitedList.js')
+  +js('/vendor/jquery/jquery.tablesorter.js')
+
+block content
+  .site-wrapper
+    .site-wrapper-inner-center-off
+      .cover-container
+        include topbar
+        .inner.cover.shadow-off
+          .inner
+            .row
+              .col-sm-3.block-center-off
+                p.control-panel
+                  a.btn.btn-success(href="#{basePath}/subject") 新規課題の作成
+                p.control-panel
+                  input.form-control.control-search(type="text")
+                  | &nbsp;
+                  button.btn.btn-primary
+                    span.glyphicon.glyphicon-search
+                p.control-panel
+                  .search-panel-group
+                    .search-panel-head.student-head(id="student") 全ての学生
+                    span.glyphicon.glyphicon-chevron-down.pull-right(id="student")
+                    .search-panel-list(id="student-list")
+                      .search-panel-content(id="student-content", number="-1", name="全ての学生")
+                        |全ての学生
+                      - for(var i = 0; i < students.length; i++){
+                      .search-panel-content(id="student-content", number="#{students[i][0]}", name="#{students[i][1]}")
+                        |#{students[i][0]}&nbsp&nbsp#{students[i][1]}
+                      - }
+                p.control-panel
+                  .search-panel-group
+                    .search-panel-head.subject-head(id="subject") 全ての課題
+                    span.glyphicon.glyphicon-chevron-down.pull-right(id="subject")
+                    .search-panel-list(id="subject-list")
+                      .search-panel-content(id="subject-content", number="-1", name="全ての課題")
+                        |全ての課題
+                      - for(var i = 0; i < subjects.length; i++){
+                      .search-panel-content(id="subject-content", number="#{subjects[i][0]}") #{subjects[i][1]}
+                      - }
+              .col-sm-9
+                table.table.table-hover(id="allDataTable")
+                  thead
+                    tr
+                    - for(var i = 0; i < tableHead.length; i++){
+                      th #{tableHead[i]}
+                    - }
+                  tbody
+                    - for(var i = 0; i < submits.length; i++){
+                    tr(class="#{submits[i].cl}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}")
+                      td.submitedInList(userId="#{submits[i].user_id}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}") #{submits[i].student_number}
+                      td.submitedInList(userId="#{submits[i].user_id}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}") #{submits[i].student_name}
+                      td.submitedInList(userId="#{submits[i].user_id}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}") #{submits[i].subject_name}
+                      td.submitedInList.status-text(userId="#{submits[i].user_id}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}") #{submits[i].status}
+                      td.submitedInList(userId="#{submits[i].user_id}", subjectId="#{submits[i].id}", studentNumber="#{submits[i].student_number}") #{submits[i].endAt}
+                    - }
+        .mastfoot
+          .inner

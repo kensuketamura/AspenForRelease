@@ -1,0 +1,25 @@
+extends layout
+
+block header
+    +css('/css/register.css')
+
+block loadFiles
+    +js('/js/register.js')
+
+block content
+  .container
+    p
+      h1 学籍番号と名前の入力
+    br
+    form.form-horizontal(role="form", action="#{basePath}/register", method="post")
+      .form-group
+        label.col-sm-2.control-label(for="inputNumber") 学籍番号
+        .col-sm-10
+          input.form-control(type="text", name="inputNumber", placeholder="bXX64XXX", required autofocus)
+      .form-group
+        label.col-sm-2.control-label(for="inputName") 氏名
+        .col-sm-10
+          input.form-control(type="text", name="inputName", placeholder="横国太郎", required)
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          button.disabled.btn.btn-primary.pull-right(type="submit" disabled) 登録を完了する

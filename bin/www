@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+var debug = require('debug')('Aspen3');
+var app = require('../server');
+var db = require('../app/models');
+
+app.set('port', process.env.PORT || 3000);
+
+
+//db.sequelize.sync({ force: true}).complete(function(err) {
+//    if(err) {
+//        throw err[0];
+//    } else {
+//        var server = app.listen(app.get('port'), function() {
+//            debug('Express server listening on port ' + server.address().port);
+//        });
+//    }
+//});
+var server = app.listen(app.get('port'), function() {
+    debug('Express server listening on port ' + server.address().port);
+});
