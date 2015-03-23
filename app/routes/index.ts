@@ -28,50 +28,32 @@ marked.setOptions({
 var tableHead = ["課題名", "提出状況", "締切"];
 /* GET home page. */
 router.get('/', function(req, res) {
-    if(!req.cookies.user_student_id) {
-        res.render('top', { basePath: config.base.path });
-        return;
-    }
+  if(!req.cookies.user_student_id) {
+    res.render('top', { basePath: config.base.path });
+    return;
+  }
 
-    var user_name = "";
-    var user_student_id = "";
-    db.User.login({studentNumber: req.signedCookies.user_student_id})
-        .then(function(user) {
-            if(user == null) {
-                throw 'no login'; //move to catch
-            }
-            if(!user.role_admin){
-              user_name = user.name;
-              user_student_id = user.studentNumber;
-              auth.setStudentNumber(res, user_student_id);
-              return db.Subject.getStatusesEachUser((<any>db).Sequelize, db.SubmitStatus, user.id);
-            } else {
-              //TODO:教師用画面の作成
-            }
-        })
-        .then(function(results) {
-            var subjects = results[0];
-            var submit_statuses = results[1];
-            console.log(subjects);
-            console.log(submit_statuses);
-
-            var submits = subjects.map((subject) => {
-                return createSubmitView(subject, submit_statuses);
-            });
-            res.render('list', { tableHead: tableHead, submits: submits, basePath: config.base.path, user_name:  user_name, student_id: user_student_id});
-        })
-        .catch(function(err) {
-            console.log(err);
-            res.render('top', {basePath: config.base.path });
-        });
+  var user_name = "";
+  var user_student_id = "";
+  db.User.login({studentNumber: req.signedCookies.user_student_id})
+    .then(function(user) {
+      if(user == null) {
+        throw 'no login'; //move to catch
+      }
+      if(!user.role_admin){
+        loadStudentHome(req, res, user);
+      } else {
+        loadAdminHome(req, res);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+      res.render('top', {basePath: config.base.path });
+    });
 });
 
 router.get('/login', function(req, res){
   res.render('login');
-});
-
-router.post('/login/callback', function(req, res){
-  //TODO:DBにアクセスしてユーザー情報を確認
 });
 
 router.get('/logout', function(req, res){
@@ -79,7 +61,7 @@ router.get('/logout', function(req, res){
 });
 
 router.get('/subject/:file', function(req, res) {
-    if(!auth.isLogin(req)) {
+    if(!req.cookies.user_student_id) {
         res.redirect(config.base.path + '/');
         return;
     }
@@ -111,7 +93,7 @@ var activity_option = {
 };
 
 router.get('/editor/:name', function(req, res) {
-    if(!auth.isLogin(req)) {
+    if(!req.cookies.user_student_id) {
         res.redirect(config.base.path + '/');
         return;
     }
@@ -264,6 +246,45 @@ router.get('/register', function(req, res) {
     //TODO アクセス制限
     res.render('register',{ basePath: config.base.path });
 });
+
+function loadStudentHome(req, res, user) {
+  var user_name = user.name;
+  var user_student_id = user.studentNumber;
+  db.Subject.getStatusesEachUser((<any>db).Sequelize, db.SubmitStatus, user.id).then(function(results) {
+    var subjects = results[0];
+    var submit_statuses = results[1];
+    console.log(subjects);
+    console.log(submit_statuses);
+
+    var submits = subjects.map((subject) => {
+      return createSubmitView(subject, submit_statuses);
+    });
+    res.render('list', { tableHead: tableHead, submits: submits, basePath: config.base.path, user_name:  user_name, student_id: user_student_id});
+  });
+}
+
+function loadAdminHome(req, res) {
+  //TODO:教師用画面の作成
+  var tableHead = ["学籍番号", "氏名", "課題名", "提出状況", "締切"];
+
+  db.Subject.getStatuses(db, 1/*lectureId*/)
+      .then(function(values) {
+      var students = values[0].map((student) => [student.studentNumber, student.name, student.id]);
+      var subjects = values[1].map((subject) => [subject.id, subject.name]);
+
+      var submits  = createAllSubmitViews(values[2], values[0], values[1]);
+
+      res.render('all', {
+          tableHead: tableHead,
+          submits: submits,
+          students: students,
+          subjects: subjects,
+          basePath: config.base.path,
+          user_name: '',
+          student_id: ''
+      });
+  });
+}
 
 function formatEndAt(endAt) {
     return (+endAt.getFullYear() - 2000) + "/" + ((+endAt.getMonth() < 9)? "0" : "") + (+endAt.getMonth() + 1) + "/" + ((+endAt.getDate() < 10)? "0" : "") + endAt.getDate();

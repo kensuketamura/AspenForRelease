@@ -9,31 +9,45 @@ var Promise = require('bluebird');
 var formatDate = require('../helper/date').formatDate;
 var http = require('../helper/post');
 
+router.post('/login/callback', function(req, res){
+  //TODO:DBにアクセスしてユーザー情報を確認
+  db.User.login({studentNumber: req.body.studentNumber})
+    .then(function(user){
+      //ユーザーが存在しないか、パスワードが間違っている
+      if(user == null || user.password != req.body.password){
+        res.status(400).json({error: "Log in Error"});
+      }
+
+      res.cookie('user_student_id', req.body.studentNumber, { signed: true });
+      res.redirect(config.base.path + '/')
+    })
+});
+
 router.post('/save', function(req, res) {
-    if(!req.signedCookies) {
-        res.status(401).json({error: "error"});
-        return;
-    }
-    var content = req.body.content;
-    var subjectId = req.body.subjectId; //TODO validation
-    var gUserId = req.signedCookies.sessionUserId;
-    db.User.findByGithub(gUserId)
-        .then(function(user) {
-            return db.SubmitStatus.saveTemporary(content, user.id, subjectId, db.Sequelize, Promise);
-        })
-        .then(function(submit) {
-            console.log(submit);
-            res.json({});
-        })
-        .catch(function() {
-            res.status(401).json({error: "something bad"});
-        });
+  if(!req.signedCookies) {
+    res.status(401).json({error: "error"});
+    return;
+  }
+  var content = req.body.content;
+  var subjectId = req.body.subjectId; //TODO validation
+  var gUserId = req.signedCookies.sessionUserId;
+  db.User.findByGithub(gUserId)
+    .then(function(user) {
+      return db.SubmitStatus.saveTemporary(content, user.id, subjectId, db.Sequelize, Promise);
+    })
+    .then(function(submit) {
+      console.log(submit);
+      res.json({});
+    })
+    .catch(function() {
+      res.status(401).json({error: "something bad"});
+    });
 });
 
 var activity_option = {
-    hostname: config.activity.host,
-    port: config.activity.port,
-    path: config.activity.path
+  hostname: config.activity.host,
+  port: config.activity.port,
+  path: config.activity.path
 };
 
 router.post('/activity', function(req, res) {
