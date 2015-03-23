@@ -47,21 +47,6 @@ app.use(passport.passport.session());
 app.use(routes);
 app.use(post_api);
 
-app.get('/login/github',
-    passport.passport.authenticate('github'),
-    function(req, res) {}
-);
-
-app.get('/login/github/callback',
-  passport.passport.authenticate('github', { failureRedirect: config.base.path + '/' }),
-  passport.login
-);
-
-app.get('/logout',
-  passport.logout
-);
-
-
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

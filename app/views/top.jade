@@ -19,16 +19,10 @@ block content
           h1.cover-heading Aspen
           p.lead
             | C言語学習環境
-          p.lead
-            | Aspenの使用には、
-            a(href="http://github.com") Githubアカウント
-            | が必要です。
-            br
-            a(href="./doc/github/", onClick="window.open('./doc/github/','','scrollbars=yes,Width=800,Height=800');return false;") Githubアカウントの作成方法
             br
             a(href="./doc/help/index.html", onClick="window.open('./doc/help/index.html','','scrollbars=yes,Width=800,Height=800');return false;") Aspenのマニュアル
           p.lead
-            a(href="#{basePath}/login/github").btn.btn-signin ログイン・新規登録
+            a(href="#{basePath}/login/github").btn.btn-signin ログイン
           .demo-editor
             include editor
           include sidebar_subject

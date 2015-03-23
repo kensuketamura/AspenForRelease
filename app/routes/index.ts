@@ -28,23 +28,26 @@ marked.setOptions({
 var tableHead = ["課題名", "提出状況", "締切"];
 /* GET home page. */
 router.get('/', function(req, res) {
-    if(!auth.isLogin(req)) {
+    if(!req.cookies.user_student_id) {
         res.render('top', { basePath: config.base.path });
         return;
     }
 
     var user_name = "";
     var user_student_id = "";
-    db.User.login({github_id: req.signedCookies.sessionUserId})
+    db.User.login({studentNumber: req.signedCookies.user_student_id})
         .then(function(user) {
             if(user == null) {
                 throw 'no login'; //move to catch
             }
-            user_name = user.name;
-            user_student_id = user.studentNumber;
-            auth.setStudentNumber(res, user_student_id);
-
-            return db.Subject.getStatusesEachUser((<any>db).Sequelize, db.SubmitStatus, user.id);
+            if(!user.role_admin){
+              user_name = user.name;
+              user_student_id = user.studentNumber;
+              auth.setStudentNumber(res, user_student_id);
+              return db.Subject.getStatusesEachUser((<any>db).Sequelize, db.SubmitStatus, user.id);
+            } else {
+              //TODO:教師用画面の作成
+            }
         })
         .then(function(results) {
             var subjects = results[0];
@@ -61,6 +64,18 @@ router.get('/', function(req, res) {
             console.log(err);
             res.render('top', {basePath: config.base.path });
         });
+});
+
+router.get('/login', function(req, res){
+  res.render('login');
+});
+
+router.post('/login/callback', function(req, res){
+  //TODO:DBにアクセスしてユーザー情報を確認
+});
+
+router.get('/logout', function(req, res){
+  //TODO:Cookieを削除
 });
 
 router.get('/subject/:file', function(req, res) {
