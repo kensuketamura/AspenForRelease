@@ -9,7 +9,7 @@ var Promise = require('bluebird');
 var formatDate = require('../helper/date').formatDate;
 var http = require('../helper/post');
 
-router.post('/login/callback', function(req, res){
+router.post('/login', function(req, res){
   //TODO:DBにアクセスしてユーザー情報を確認
   db.User.login({studentNumber: req.body.studentNumber})
     .then(function(user){

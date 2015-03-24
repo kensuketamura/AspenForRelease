@@ -1,0 +1,24 @@
+extends layout
+
+block header
+    +css('/css/register.css')
+
+block loadFiles
+
+block content
+  .container
+    p
+      h2 学籍番号とパスワードを入力してください
+    br
+    form.form-horizontal(role="form", action="#{basePath}/login", method="post")
+      .form-group
+        label.col-sm-3.control-label(for="studentNumber") 学籍番号
+        .col-sm-9
+          input.form-control(type="text", name="studentNumber", placeholder="bXX64XXX", required autofocus)
+      .form-group
+        label.col-sm-3.control-label(for="password") パスワード
+        .col-sm-9
+          input.form-control(type="password", name="password", placeholder="Password", required)
+      .form-group
+        .col-sm-offset-3.col-sm-9
+          button.btn.btn-primary.pull-right(type="submit") ログイン
