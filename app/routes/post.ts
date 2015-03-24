@@ -11,6 +11,7 @@ var http = require('../helper/post');
 
 router.post('/login', function(req, res){
   //TODO:DBにアクセスしてユーザー情報を確認
+  console.log("Login : " + req.body.studentNumber + " " + (new Date()));
   db.User.login({studentNumber: req.body.studentNumber})
     .then(function(user){
       //ユーザーが存在しないか、パスワードが間違っている

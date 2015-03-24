@@ -8,7 +8,7 @@ db:
   host: 'localhost'
   user: 'root'
   password: ''
-  database: 'aspen'
+  database: 'aspen_release'
 compile:
   host: 'localhost'
   port: 3000

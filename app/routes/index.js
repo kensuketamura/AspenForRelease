@@ -28,7 +28,7 @@ var tableHead = ["課題名", "提出状況", "締切"];
 
 /* GET home page. */
 router.get('/', function (req, res) {
-    if (!req.cookies.user_student_id) {
+    if (!req.signedCookies.user_student_id) {
         res.render('top', { basePath: config.base.path });
         return;
     }
@@ -257,6 +257,8 @@ function loadStudentHome(req, res, user) {
 function loadAdminHome(req, res) {
     //TODO:教師用画面の作成
     var tableHead = ["学籍番号", "氏名", "課題名", "提出状況", "締切"];
+
+    console.log("admin page");
 
     db.Subject.getStatuses(db, 1).then(function (values) {
         var students = values[0].map(function (student) {
