@@ -57,11 +57,12 @@ router.get('/login', function(req, res){
 });
 
 router.get('/logout', function(req, res){
-  //TODO:Cookieを削除
+  res.clearCookie('user_student_id');
+  res.redirect(config.base.path + '/');
 });
 
 router.get('/subject/:file', function(req, res) {
-    if(!req.cookies.user_student_id) {
+    if(!req.signedCookies.user_student_id) {
         res.redirect(config.base.path + '/');
         return;
     }
@@ -93,7 +94,7 @@ var activity_option = {
 };
 
 router.get('/editor/:name', function(req, res) {
-    if(!req.cookies.user_student_id) {
+    if(!req.signedCookies.user_student_id) {
         res.redirect(config.base.path + '/');
         return;
     }
@@ -108,7 +109,7 @@ router.get('/editor/:name', function(req, res) {
         userId: req.signedCookies.sessionUserId
     };
 
-    db.User.find({where: {github_id: req.signedCookies.sessionUserId}})
+    db.User.find({where: {studentNumber: req.signedCookies.user_student_id}})
                 .then(function(user) {
                     userId = user.id;
                     user_name = user.name;
@@ -164,7 +165,7 @@ router.get('/editor/:name', function(req, res) {
 });
 
 router.get('/editor', function(req, res) {
-    db.User.find({where: {github_id: req.signedCookies.sessionUserId}})
+    db.User.find({where: {studentNumber: req.signedCookies.user_student_id}})
                 .then(function(user) {
                     res.render('editorView', {
                         has_content: false,
@@ -180,72 +181,69 @@ router.get('/editor', function(req, res) {
 
 
 router.get('/user/:userid', function(req, res) {
-    //TODO アクセス制限
-    res.redirect(config.base.path + '/');
-    return;
-    res.render('list', { basePath: config.base.path });
+  //TODO アクセス制限
+  res.redirect(config.base.path + '/');
+  return;
+  res.render('list', { basePath: config.base.path });
 });
 
 router.get('/user/:userId/subject/:subjectId', function(req, res) {
-    if(!auth.isLogin(req)) {
-        res.redirect(config.base.path + '/');
-        return;
-    }
+  checkAdmin(req, res).then(function(){
     db.SubmitStatus.find({where: db.Sequelize.and({UserId: req.params.userId},{SubjectId: req.params.subjectId})})
-        .then(function(submit) {
-            if(submit) {
-                res.render('source_view', {content: submit.content});
-            } else {
-                res.send('Not yet.');
-            }
-        });
-});
-
-router.get('/list/all', function(req, res) {
-    var tableHead = ["学籍番号", "氏名", "課題名", "提出状況", "締切"];
-
-    db.Subject.getStatuses(db, 1/*lectureId*/)
-        .then(function(values) {
-        var students = values[0].map((student) => [student.studentNumber, student.name, student.id]);
-        var subjects = values[1].map((subject) => [subject.id, subject.name]);
-
-        var submits  = createAllSubmitViews(values[2], values[0], values[1]);
-
-        res.render('all', {
-            tableHead: tableHead,
-            submits: submits,
-            students: students,
-            subjects: subjects,
+      .then(function(submit) {
+        if(submit) {
+          res.render('source_view', {
             basePath: config.base.path,
-            user_name: '',
-            student_id: ''
-        });
-    });
+            content: submit.content
+          });
+        } else {
+          res.send('Not yet.');
+        }
+      });
+  });
 });
 
 router.get('/subject', function(req, res) {
-    if(!auth.isLogin(req)) {
-        res.redirect(config.base.path + '/');
-        return;
-    }
-    //db.User.find({where: db.Sequelize.and({github_id: req.signedCookies.sessionUserId}, {admin_role:
-    //TODO Check admin role
+  //db.User.find({where: db.Sequelize.and({github_id: req.signedCookies.sessionUserId}, {admin_role
+  checkAdmin(req, res).then(function(){
     res.render('subject', {
-        basePath: config.base.path,
-        content: '',
-        endAt: '',
-        name: '',
-        is_show_content: false,
-        example: '',
-        user_name: '',
-        student_id: ''
+      basePath: config.base.path,
+      content: '',
+      endAt: '',
+      name: '',
+      is_show_content: false,
+      example: '',
+      user_name: '',
+      student_id: ''
     });
+  });
 });
 
 router.get('/register', function(req, res) {
-    //TODO アクセス制限
-    res.render('register',{ basePath: config.base.path });
+  //TODO アクセス制限
+  res.render('register',{ basePath: config.base.path });
 });
+
+router.get('/students', function(req, res){
+  checkAdmin(req, res).then(function(){
+    console.log("/students is accessed");
+    res.render('students', { basePath: config.base.path });
+  });
+});
+
+function checkAdmin(req, res) {
+  return db.User.login({studentNumber: req.signedCookies.user_student_id})
+    .then(function(user) {
+      if(user == null) {
+        throw 'no login'; //move to catch
+      }
+      if(!user.role_admin){
+        res.redirect(config.base.path + '/');
+      } else {
+        return
+      }
+    });
+}
 
 function loadStudentHome(req, res, user) {
   var user_name = user.name;

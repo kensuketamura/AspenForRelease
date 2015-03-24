@@ -1,12 +1,17 @@
 extends layout
-doctype html
-html(lang='ja')
-  head
-    title Aspen
-    meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
-    meta(http-equiv='X-UA-Compatible' content='IE=edge')
-    meta(name="viewport" content="width=device-width, initial-scale=1")
+
+block header
+  +css('/css/index.css')
+  include editor_css
+
 block content
-  .container
-    .main-view
-      pre= content
+  .demo-editor
+    include editor
+  - if(has_content) {
+  #file-content(style="display: none;")= example
+  #file-reset(style="display: none;")= subject_reset
+  #file-timestamp(style="display: none;")= timestamp
+  - }
+  include sidebar_subject
+  .mastfoot
+    .inner

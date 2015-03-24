@@ -4,7 +4,9 @@ button.btn.btn-default.sidebar-btn-right
   .markdown
     - if(is_show_content) {
       h1= title
+      - if(content){
       != md(content)
+      - }
     - }
   .p
     h3#poplar-title エラー訂正案
