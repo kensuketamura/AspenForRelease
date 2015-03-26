@@ -17,7 +17,7 @@ $(function(){
   $(".submitedInList").bind("click", function() {
     var subjectId = $(this).attr("subjectId");
     var userId = $(this).attr("userId");
-    window.open(Config.basePath + "/user/" + userId + "/subject/"+ subjectId, '', 'scrollbars=yes,Width=800,Height=800');
+    window.open(Config.basePath + "/user/" + userId + "/subject/"+ subjectId, '', 'scrollbars=yes,Width=1300,Height=800');
   });
 
   $(".search-panel-group > span").bind("click", function(){

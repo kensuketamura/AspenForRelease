@@ -31,8 +31,8 @@ router.post('/save', function(req, res) {
   }
   var content = req.body.content;
   var subjectId = req.body.subjectId; //TODO validation
-  var gUserId = req.signedCookies.sessionUserId;
-  db.User.findByGithub(gUserId)
+  var userStudentId = req.signedCookies.user_student_id;
+  db.User.find({ studentNumber: userStudentId })
     .then(function(user) {
       return db.SubmitStatus.saveTemporary(content, user.id, subjectId, db.Sequelize, Promise);
     })
@@ -60,7 +60,7 @@ router.post('/activity', function(req, res) {
         type: req.body.type,
         data: req.body.data,
         subjectId: req.body.subjectId,
-        userId: req.signedCookies.sessionUserId
+        userId: req.signedCookies.user_student_id
     };
     console.log(activity_data);
     http.postJSON(activity_data, activity_option, function(data) {
@@ -76,8 +76,8 @@ router.post('/submit', function(req, res) {
     }
     var content = req.body.content;
     var subjectId = req.body.subjectId; //TODO validation
-    var gUserId = req.signedCookies.sessionUserId;
-    db.User.findByGithub(gUserId)
+    var userStudentId = req.signedCookies.user_student_id;
+    db.User.find({ studentNumber: userStudentId })
         .then(function(user) {
             return db.SubmitStatus.submit(content, user.id, subjectId, db.Sequelize);
         })
@@ -147,8 +147,8 @@ var post_compile_option = {
 router.post('/compile', function(req, res) {
     //dest server is configured by default.yaml
     var client_body = req.body;
-    if(req.signedCookies.sessionUserId) {
-        client_body.userId = req.signedCookies.sessionUserId;
+    if(req.signedCookies.user_student_id) {
+        client_body.userId = req.signedCookies.user_student_id;
     }
 
     http.postJSON(client_body, post_compile_option, function(data) {
@@ -166,8 +166,8 @@ var post_poplar_option = {
 
 router.post('/poplar', function(req, res) {
     var client_body = req.body;
-    if(req.signedCookies.sessionUserId) {
-        client_body.userId = req.signedCookies.sessionUserId;
+    if(req.signedCookies.user_student_id) {
+        client_body.userId = req.signedCookies.user_student_id;
     }
 
    http.postJSON(client_body, post_poplar_option, function(data) {
