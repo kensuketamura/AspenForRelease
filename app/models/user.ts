@@ -49,13 +49,13 @@ module.exports = (sequelize, DataTypes) => {
                 return User.findAll({where: {role_admin: false}});
             },
             /**
-             * githubIdからuserを取得する
-             * @method findByGithub
-             * @param {Number} githubId Github ID
+             * 学籍番号からuserを取得する
+             * @method findByStudentNumber
+             * @param {Number} studentNumber 学籍番号
              * @return {Promise}
              */
-            findByGithub: (githubId) => {
-                return User.find({where: {github_id: githubId}});
+            findByStudentNumber: (studentNumber) => {
+                return User.find({where: {studentNumber: studentNumber}});
             }
         }
     });

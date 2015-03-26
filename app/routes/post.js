@@ -30,7 +30,7 @@ router.post('/save', function (req, res) {
     var content = req.body.content;
     var subjectId = req.body.subjectId;
     var userStudentId = req.signedCookies.user_student_id;
-    db.User.find({ studentNumber: userStudentId }).then(function (user) {
+    db.User.findByStudentNumber(userStudentId).then(function (user) {
         return db.SubmitStatus.saveTemporary(content, user.id, subjectId, db.Sequelize, Promise);
     }).then(function (submit) {
         console.log(submit);
@@ -72,7 +72,8 @@ router.post('/submit', function (req, res) {
     var content = req.body.content;
     var subjectId = req.body.subjectId;
     var userStudentId = req.signedCookies.user_student_id;
-    db.User.find({ studentNumber: userStudentId }).then(function (user) {
+    console.log("--------" + userStudentId + "--------");
+    db.User.findByStudentNumber(userStudentId).then(function (user) {
         return db.SubmitStatus.submit(content, user.id, subjectId, db.Sequelize);
     }).then(function (submit) {
         console.log(submit);

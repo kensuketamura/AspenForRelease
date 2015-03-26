@@ -91,16 +91,16 @@ module.exports = (sequelize, DataTypes) => {
                     });
             },
             /**
-             * 一時保存
-             * @method saveTemporary
-             * @param {String} content 提出内容
+             * 採点
+             * @method mark
+             * @param {String} value 評価内容
              * @param {Number} userId ユーザID
              * @param {Number} subjectId 課題番号
              * @param {Promise} Promise promise
              * @return {Promise}
              */
             mark: () => {
-              
+
             }
         }
     });
