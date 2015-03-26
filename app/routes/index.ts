@@ -224,6 +224,11 @@ router.get('/register', function(req, res) {
   res.render('register',{ basePath: config.base.path });
 });
 
+router.get('/register_student', function(req, res) {
+  //TODO アクセス制限
+  res.render('register_student',{ basePath: config.base.path });
+});
+
 router.get('/students', function(req, res){
   checkAdmin(req, res).then(function(){
     console.log("/students is accessed");
