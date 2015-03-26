@@ -2,11 +2,12 @@ extends layout
 
 block header
   +css('/css/index.css')
+  +css('/css/submitedSubject.css')
   include editor_css
 
 block content
   .demo-editor
-    include editor
+    include submitedSubject
   - if(has_content) {
   #file-content(style="display: none;")= example
   #file-reset(style="display: none;")= subject_reset

@@ -7,6 +7,7 @@ var config = require('config');
 var Promise = require('bluebird');
 var formatDate = require('../helper/date').formatDate;
 var http = require('../helper/post');
+
 router.post('/login', function (req, res) {
     //TODO:DBにアクセスしてユーザー情報を確認
     console.log("Login : " + req.body.studentNumber + " " + (new Date()));
@@ -15,19 +16,21 @@ router.post('/login', function (req, res) {
         if (user == null || user.password != req.body.password) {
             res.status(400).json({ error: "Log in Error" });
         }
+
         res.cookie('user_student_id', req.body.studentNumber, { signed: true });
         res.redirect(config.base.path + '/');
     });
 });
+
 router.post('/save', function (req, res) {
     if (!req.signedCookies) {
         res.status(401).json({ error: "error" });
         return;
     }
     var content = req.body.content;
-    var subjectId = req.body.subjectId; //TODO validation
-    var gUserId = req.signedCookies.sessionUserId;
-    db.User.findByGithub(gUserId).then(function (user) {
+    var subjectId = req.body.subjectId;
+    var userStudentId = req.signedCookies.user_student_id;
+    db.User.findByStudentNumber(userStudentId).then(function (user) {
         return db.SubmitStatus.saveTemporary(content, user.id, subjectId, db.Sequelize, Promise);
     }).then(function (submit) {
         console.log(submit);
@@ -36,11 +39,13 @@ router.post('/save', function (req, res) {
         res.status(401).json({ error: "something bad" });
     });
 });
+
 var activity_option = {
     hostname: config.activity.host,
     port: config.activity.port,
     path: config.activity.path
 };
+
 router.post('/activity', function (req, res) {
     if (!req.signedCookies) {
         res.status(401).json({ error: "error" });
@@ -50,7 +55,7 @@ router.post('/activity', function (req, res) {
         type: req.body.type,
         data: req.body.data,
         subjectId: req.body.subjectId,
-        userId: req.signedCookies.sessionUserId
+        userId: req.signedCookies.user_student_id
     };
     console.log(activity_data);
     http.postJSON(activity_data, activity_option, function (data) {
@@ -58,15 +63,17 @@ router.post('/activity', function (req, res) {
     });
     res.json({});
 });
+
 router.post('/submit', function (req, res) {
     if (!req.signedCookies) {
         res.status(401).json({ error: "error" });
         return;
     }
     var content = req.body.content;
-    var subjectId = req.body.subjectId; //TODO validation
-    var gUserId = req.signedCookies.sessionUserId;
-    db.User.findByGithub(gUserId).then(function (user) {
+    var subjectId = req.body.subjectId;
+    var userStudentId = req.signedCookies.user_student_id;
+    console.log("--------" + userStudentId + "--------");
+    db.User.findByStudentNumber(userStudentId).then(function (user) {
         return db.SubmitStatus.submit(content, user.id, subjectId, db.Sequelize);
     }).then(function (submit) {
         console.log(submit);
@@ -75,6 +82,7 @@ router.post('/submit', function (req, res) {
         res.status(401).json({ error: "something bad" });
     });
 });
+
 router.post('/subject/new', function (req, res) {
     var subject_name = req.body.name;
     var subject_endAt = req.body.limit;
@@ -93,6 +101,7 @@ router.post('/subject/new', function (req, res) {
         res.redirect(config.base.path + '/');
     });
 });
+
 router.post('/register', function (req, res) {
     var studentNumber = req.body.inputNumber;
     var userName = req.body.inputName;
@@ -111,8 +120,7 @@ router.post('/register', function (req, res) {
         console.log(err);
     });
 });
-router.post('/register_student', function (req, res) {
-});
+
 var post_compile_option = {
     hostname: config.compile.host,
     port: config.compile.port,
@@ -120,16 +128,19 @@ var post_compile_option = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
 };
+
 router.post('/compile', function (req, res) {
     //dest server is configured by default.yaml
     var client_body = req.body;
-    if (req.signedCookies.sessionUserId) {
-        client_body.userId = req.signedCookies.sessionUserId;
+    if (req.signedCookies.user_student_id) {
+        client_body.userId = req.signedCookies.user_student_id;
     }
+
     http.postJSON(client_body, post_compile_option, function (data) {
         res.json(data);
     });
 });
+
 var post_poplar_option = {
     hostname: config.poplar.host,
     port: config.poplar.port,
@@ -137,15 +148,18 @@ var post_poplar_option = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
 };
+
 router.post('/poplar', function (req, res) {
     var client_body = req.body;
-    if (req.signedCookies.sessionUserId) {
-        client_body.userId = req.signedCookies.sessionUserId;
+    if (req.signedCookies.user_student_id) {
+        client_body.userId = req.signedCookies.user_student_id;
     }
+
     http.postJSON(client_body, post_poplar_option, function (data) {
         res.json(data);
     });
 });
+
 router.post('/dummy/compile', function (req, res) {
     console.log(req);
     var ret = {
@@ -156,11 +170,14 @@ router.post('/dummy/compile', function (req, res) {
     };
     res.json(ret);
 });
+
 router.post('/dummy/poplar', function (req, res) {
     //FIXME
     res.json({});
 });
+
 router.post('/dummy/activity', function (req, res) {
     res.json({});
 });
+
 module.exports = router;

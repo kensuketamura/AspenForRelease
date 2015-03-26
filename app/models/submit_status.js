@@ -15,6 +15,7 @@ module.exports = function (sequelize, DataTypes) {
             defaultValue: 0
         },
         content: DataTypes.TEXT,
+        marks: DataTypes.TEXT,
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
@@ -83,6 +84,17 @@ module.exports = function (sequelize, DataTypes) {
                         });
                     }
                 });
+            },
+            /**
+            * 採点
+            * @method mark
+            * @param {String} value 評価内容
+            * @param {Number} userId ユーザID
+            * @param {Number} subjectId 課題番号
+            * @param {Promise} Promise promise
+            * @return {Promise}
+            */
+            mark: function () {
             }
         }
     });

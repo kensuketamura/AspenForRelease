@@ -1,0 +1,77 @@
+input#file-open-dialog(type='file', style='display:none;', accept=".c")
+script#submit-confirm-template(type='text/html')
+  span.submit-confilm-text.text-success
+    span.glyphicon.glyphicon-ok
+    |&nbsp;
+    span.submit-date <%=submit_date%>
+    |&nbsp;
+    span 提出&nbsp;
+.container(style="width: 960px;")
+  .editor-view
+    .alert.alert-danger#NotSupportedBrouserAlert(style="display: none;")
+      | Your browser is not supported. please use Internet Explorer 10 or 11, Google Chrome or Firefox.
+    .navbar.navbar-default
+      .navbar-collapse
+        .navbar-header.pull-right
+          span#submit-confirm-view
+            - if(status_submitted) {
+            span.submit-confilm-text.text-success
+              span.glyphicon.glyphicon-ok
+              |&nbsp;
+              span.submit-date= status_date
+              |&nbsp;
+              span 提出&nbsp;
+            - }
+        button#compile.btn.navbar-btn.btn-primary.disabled-on-files-empty.disabled-on-running(type='button', data-toggle="tooltip", title="Run&nbsp;(Ctrl-Enter)", onContextmenu="return false")
+          | &nbsp;
+          span.glyphicon.glyphicon-play
+          | &nbsp;
+          | 実行
+        | &nbsp;
+        | &nbsp;
+        button#marking.btn.navbar-btn.btn-success.disabled-on-files-empty.disabled-on-running(type='button', data-toggle="tooltip", title="Marking", onContextmenu="return false")
+          | &nbsp;
+          span.glyphicon.glyphicon-pencil
+          | &nbsp;
+          | 採点
+        | &nbsp;
+        input#marking-value(type="text", name="markingValue", placeholder="点数", required autofocus)
+        | &nbsp;
+
+    +template('file-list-template')
+      li.file-tab.disabled-on-running
+        a(href='#',id='${BaseName}') ${Name}
+        //a(href='#', id='close${BaseName}')
+          span.glyphicon.glyphicon-remove
+    p
+      ul#file-name-lists.nav.nav-tabs(onContextmenu="return false")
+        //li.disabled-on-running
+          a#create-file(href='#', data-toggle="tooltip", title="New&nbsp;File")
+            span.glyphicon.glyphicon-plus
+        //li.pull-right.disabled-on-running
+          a#delete-file(href='#', data-toggle="tooltip", title="Delete&nbsp;File")
+            span.glyphicon.glyphicon-remove
+    pre#editor(style="border: solid 1px #ddd")
+    .panel.panel-default
+      .panel-heading
+        h4 実行結果
+      #output.panel-body
+//include sidebar
++template('file-list-template')
+  li.file-tab.disabled-on-running
+    a(href='#',id='${BaseName}') ${Name}
+    //a(href='#', id='close${BaseName}')
+      span.glyphicon.glyphicon-remove
++js('/vendor/ace/src/ace.js')
++js('/vendor/FileSaver.js')
++js('/vendor/sweetalert/lib/sweet-alert.min.js')
+//+js('/js/FileManager.js')
++js('/js/ua.js')
++js('/js/clang.js')
++js('/js/index.js')
+//+js('/js/editorView.js')
++js('/vendor/jstree/dist/jstree.min.js')
++js('/vendor/sweetalert/lib/sweet-alert.min.js')
+style.
+  body {
+  }
