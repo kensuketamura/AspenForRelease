@@ -102,10 +102,10 @@ router.get('/editor/:name', function (req, res) {
         type: 'subject_open',
         data: {},
         subjectId: req.params.name,
-        userId: req.signedCookies.sessionUserId
+        userId: req.signedCookies.user_student_id
     };
 
-    db.User.find({ where: { studentNumber: req.signedCookies.user_student_id } }).then(function (user) {
+    db.User.findByStudentNumber(req.signedCookies.user_student_id).then(function (user) {
         userId = user.id;
         user_name = user.name;
         user_studentId = user.studentNumber;
@@ -177,11 +177,28 @@ router.get('/user/:userid', function (req, res) {
 
 router.get('/user/:userId/subject/:subjectId', function (req, res) {
     checkAdmin(req, res).then(function () {
-        db.SubmitStatus.find({ where: db.Sequelize.and({ UserId: req.params.userId }, { SubjectId: req.params.subjectId }) }).then(function (submit) {
+        var subject_name = "";
+        var subject_content = "";
+        var subject_example = "";
+        db.Subject.find({ where: { id: req.params.subjectId } }).then(function (subject) {
+            subject_name = subject.name;
+            subject_content = subject.content;
+            subject_example = subject.example;
+            return db.SubmitStatus.find({ where: db.Sequelize.and({ UserId: req.params.userId }, { SubjectId: req.params.subjectId }) });
+        }).then(function (submit) {
             if (submit) {
                 res.render('source_view', {
+                    has_content: true,
+                    content: subject_example,
+                    subject_reset: subject_content,
+                    example: submit.content,
                     basePath: config.base.path,
-                    content: submit.content
+                    timestamp: submit.updatedAt,
+                    md: marked,
+                    title: subject_name,
+                    is_show_content: true,
+                    status_submitted: submit.status > 0,
+                    status_date: formatDate('YYYY-MM-DD HH:mm', submit.updatedAt)
                 });
             } else {
                 res.send('Not yet.');

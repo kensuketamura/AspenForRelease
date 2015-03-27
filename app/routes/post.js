@@ -64,6 +64,12 @@ router.post('/activity', function (req, res) {
     res.json({});
 });
 
+router.post('/marking', function (req, res) {
+    checkAdmin(req, res).then(function () {
+        db.SubmitStatus.mark();
+    });
+});
+
 router.post('/submit', function (req, res) {
     if (!req.signedCookies) {
         res.status(401).json({ error: "error" });
@@ -179,5 +185,18 @@ router.post('/dummy/poplar', function (req, res) {
 router.post('/dummy/activity', function (req, res) {
     res.json({});
 });
+
+function checkAdmin(req, res) {
+    return db.User.login({ studentNumber: req.signedCookies.user_student_id }).then(function (user) {
+        if (user == null) {
+            throw 'no login';
+        }
+        if (!user.role_admin) {
+            res.redirect(config.base.path + '/');
+        } else {
+            return;
+        }
+    });
+}
 
 module.exports = router;

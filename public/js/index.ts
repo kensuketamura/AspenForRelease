@@ -1172,6 +1172,29 @@ $(function () {
         $("#file-open-dialog").click();
     });
 
+    var MarkingCallback = (e: Event) => {
+      var value = $("#marking-value").val();
+      var subjectId = C2JS.getSubjectId();
+      var callback = (res) => {
+        swal({title:"", text:'採点が完了しました', type: "success", timer:100000});
+      }
+      var onerror = () => {
+        console.log("error");
+      }
+
+      $.ajax({
+        type: "POST",
+        url: Config.basePath + "/marking",
+        data: JSON.stringify({value: value, subject_id: subjectId}),
+        dataType: 'json',
+        contentType: "application/json; charset=utf-8",
+        success: callback,
+        error: onerror
+        });
+      console.log(value);
+    }
+
+    $("#marking").click(MarkingCallback);
 
     $(window).resize(function() {
       var width = $(window).width();

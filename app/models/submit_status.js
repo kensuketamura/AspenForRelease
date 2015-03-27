@@ -94,7 +94,13 @@ module.exports = function (sequelize, DataTypes) {
             * @param {Promise} Promise promise
             * @return {Promise}
             */
-            mark: function () {
+            mark: function (value, user_id, subject_id, seq) {
+                return SubmitStatus.find({ where: seq.and({ UserId: user_id }, { SubjectId: subject_id }) }).then(function (submit) {
+                    if (submit) {
+                        submit.marks = value;
+                        return submit.save();
+                    }
+                });
             }
         }
     });

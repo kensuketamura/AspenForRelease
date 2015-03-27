@@ -58,6 +58,7 @@ script#submit-confirm-template(type='text/html')
       #output.panel-body
 //include sidebar
 +template('file-list-template')
+
   li.file-tab.disabled-on-running
     a(href='#',id='${BaseName}') ${Name}
     //a(href='#', id='close${BaseName}')
