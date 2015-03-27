@@ -145,6 +145,10 @@ router.post('/register', function(req, res) {
     });
 });
 
+router.post('/register_student', function(req, res) {
+
+});
+
 var post_compile_option = {
     hostname: config.compile.host,
     port:     config.compile.port,

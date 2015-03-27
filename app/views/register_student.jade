@@ -1,0 +1,20 @@
+extends layout
+
+block header
+    // +css('/css/register.css')
+
+block loadFiles
+    +js('/js/register_student.js')
+
+block content
+  .container
+    p
+      h1 生徒情報の登録
+    br
+    form.form-horizontal
+      .form-group
+        label.col-sm-2.control-label(for="inputNumber") csvファイル
+        .col-sm-10
+          input#file.form-control(type="file", name="csvFile", required)
+        .col-sm-offset-2.col-sm-10
+          button#button.btn.btn-primary.pull-right 登録を完了する
