@@ -206,6 +206,7 @@ router.get('/user/:userId/subject/:subjectId', function(req, res) {
             content: subject_example,
             subject_reset: subject_content,
             example: submit.content,
+            marks: submit.marks,
             basePath: config.base.path,
             timestamp: submit.updatedAt,
             md: marked,

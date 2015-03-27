@@ -69,9 +69,11 @@ router.post('/activity', function(req, res) {
     res.json({});
 });
 
-router.post('/marking', function(req, res){
+router.post('/marking/user/:userId/subject/:subjectId', function(req, res){
   checkAdmin(req, res).then(function(){
-    db.SubmitStatus.mark();
+    return db.SubmitStatus.mark(req.body.markingValue, req.params.userId, req.params.subjectId, db.Sequelize);
+  }).then(function(){
+    res.json({});
   });
 });
 
