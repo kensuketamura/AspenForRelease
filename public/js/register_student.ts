@@ -9,7 +9,7 @@ $(function() {
         console.log(arr);
         $.ajax({
           type: 'POST',
-          url: '/register_student',
+          url: Config.basePath + '/register_student',
           data: {users: arr.slice(1)},
           success: function() {
             console.log(arrayToCSV(arr));

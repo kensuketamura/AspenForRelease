@@ -9,7 +9,7 @@ $(function () {
                 console.log(arr);
                 $.ajax({
                     type: 'POST',
-                    url: '/register_student',
+                    url: Config.basePath + '/register_student',
                     data: { users: arr.slice(1) },
                     success: function () {
                         console.log(arrayToCSV(arr));
@@ -20,6 +20,7 @@ $(function () {
         }
     });
 });
+
 function csvToArray(csv) {
     var arr = csv.split("\n");
     arr = arr.map(function (el) {
@@ -36,26 +37,28 @@ function csvToArray(csv) {
     });
     return list;
 }
+
 function addPassToArray(arr) {
     arr.forEach(function (element, i) {
         if (element.length < 4 || element[3] == "") {
             if (i == 0) {
                 element.push('password');
-            }
-            else {
+            } else {
                 element[3] = generatePass();
             }
         }
     });
     return arr;
 }
+
 function arrayToCSV(arr) {
     var temp = arr.map(function (element) {
         return element.join(",");
     });
     return temp.join("\n");
 }
+
 function generatePass(length) {
-    if (length === void 0) { length = 8; }
+    if (typeof length === "undefined") { length = 8; }
     return Math.random().toString(36).slice(-length);
 }
