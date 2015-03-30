@@ -56,6 +56,16 @@ module.exports = (sequelize, DataTypes) => {
              */
             findByStudentNumber: (studentNumber) => {
                 return User.find({where: {studentNumber: studentNumber}});
+            },
+
+            createStudent: (name, studentNumber, password, role_admin) => {
+              return User.create({
+                name: name,
+                studentNumber: studentNumber,
+                password: password,
+                role_admin: role_admin,
+                createdAt: new Date()
+              });
             }
         }
     });
