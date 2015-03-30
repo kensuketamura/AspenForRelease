@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
              * @param {Number} lectureId 講義番号
              * @return {Promise}
              */
-            getStudentList: (lectureId) => {
+            getStudentList: () => {
                 return User.findAll({where: {role_admin: false}});
             },
             /**

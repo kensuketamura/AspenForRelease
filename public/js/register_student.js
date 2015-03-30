@@ -22,11 +22,15 @@ $(function () {
 });
 function csvToArray(csv) {
     var arr = csv.split("\n");
+    arr = arr.map(function (el) {
+        return el.replace(/[\n\r]/g, "");
+    });
     var list = [];
     arr.forEach(function (element, i) {
         var temp = element.split(",");
         if (temp.length > 1) {
-            temp[1] = temp[1] ? true : false;
+            temp[1] = temp[1] ? 1 : 0;
+            temp[2] = temp[2];
             list.push(temp);
         }
     });
@@ -34,11 +38,13 @@ function csvToArray(csv) {
 }
 function addPassToArray(arr) {
     arr.forEach(function (element, i) {
-        if (i == 0) {
-            element.push('password');
-        }
-        else {
-            element.push(generatePass());
+        if (element.length < 4 || element[3] == "") {
+            if (i == 0) {
+                element.push('password');
+            }
+            else {
+                element[3] = generatePass();
+            }
         }
     });
     return arr;

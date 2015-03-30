@@ -44,7 +44,7 @@ module.exports = function (sequelize, DataTypes) {
              * @param {Number} lectureId 講義番号
              * @return {Promise}
              */
-            getStudentList: function (lectureId) {
+            getStudentList: function () {
                 return User.findAll({ where: { role_admin: false } });
             },
             /**

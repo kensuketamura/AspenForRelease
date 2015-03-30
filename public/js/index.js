@@ -4,16 +4,13 @@
 ///<reference path='../../typings/config/config.d.ts'/>
 ///<reference path='../../typings/lodash/lodash.d.ts'/>
 /// <reference path="FileManager.ts"/>
-
 var _ua;
-
 var C2JS;
 (function (C2JS) {
     function GetHelloWorldSource() {
         return "#include <stdio.h>\n\nint main() {\n    printf(\"hello, world!\\n\");\n    return 0;\n}";
     }
     C2JS.GetHelloWorldSource = GetHelloWorldSource;
-
     var Editor = (function () {
         function Editor($editor) {
             this.errorLineIds = [];
@@ -26,39 +23,31 @@ var C2JS;
         Editor.prototype.OnChange = function (callback) {
             this.editor.on("change", callback);
         };
-
         Editor.prototype.OnCopy = function (callback) {
             this.editor.on("copy", callback);
         };
-
         Editor.prototype.OnPaste = function (callback) {
             this.editor.on("paste", callback);
         };
-
         Editor.prototype.GetValue = function () {
             return this.editor.getValue();
         };
-
         Editor.prototype.SetValue = function (text) {
             this.editor.setValue(text);
             this.editor.clearSelection();
             this.editor.gotoLine(0);
         };
-
         Editor.prototype.Clear = function () {
             this.SetValue("");
         };
-
         Editor.prototype.Disable = function () {
             this.editor.setReadOnly(true);
             $("#editor").css({ "background-color": "#eee" });
         };
-
         Editor.prototype.Enable = function () {
             this.editor.setReadOnly(false);
             $("#editor").css({ "background-color": "#fff" });
         };
-
         Editor.prototype.SetErrorLines = function (lines) {
             var annotations = [];
             var session = this.editor.getSession();
@@ -74,7 +63,6 @@ var C2JS;
             }
             this.editor.getSession().setAnnotations(annotations);
         };
-
         Editor.prototype.RemoveAllErrorLine = function () {
             var session = this.editor.getSession();
             session.clearAnnotations();
@@ -82,26 +70,21 @@ var C2JS;
                 session.removeMarker(this.errorLineIds[i]);
             }
         };
-
         Editor.prototype.ResetHelloWorld = function () {
             this.SetValue(GetHelloWorldSource());
         };
-
         Editor.prototype.ClearHistory = function () {
             this.editor.getUndoManager().reset();
         };
-
         Editor.prototype.ContainsMultiByteSpace = function () {
             return this.editor.getValue().match(/　/);
         };
-
         Editor.prototype.ReplaceMultiByteSpace = function () {
             this.editor.setValue(this.editor.getValue().replace(/　/g, "  "));
         };
         return Editor;
     })();
     C2JS.Editor = Editor;
-
     var Output = (function () {
         function Output($output) {
             this.$output = $output;
@@ -109,11 +92,10 @@ var C2JS;
         Output.prototype.Print = function (val) {
             this.$output.append(val);
         };
-
         Output.ExpandTab = function (val, width) {
             var tsv = val.split("\t");
             var ret = "";
-            var spase = "                ";
+            var spase = "                "; // 16 spaces
             var n = tsv.length;
             for (var i = 0; i < n; ++i) {
                 ret += tsv[i];
@@ -123,40 +105,35 @@ var C2JS;
             }
             return ret;
         };
-
         Output.prototype.PrintFromC = function (val) {
             val = Output.ExpandTab(val, 4);
             var obj = document.createElement('samp');
             if (typeof obj.textContent != 'undefined') {
                 obj.textContent = val;
-            } else {
+            }
+            else {
                 obj.innerText = val;
             }
             this.$output.append("<samp>" + obj.innerHTML.replace(/ /g, "&nbsp;") + "</samp><br>");
         };
-
         Output.prototype.PrintLn = function (val) {
             this.$output.append(val + '<br>\n');
         };
-
         Output.prototype.PrintErrorLn = function (val) {
             this.$output.append('<span class="text-danger">' + val + '</span><br>');
         };
-
         Output.prototype.Prompt = function () {
             this.$output.append('$ ');
         };
-
         Output.prototype.Clear = function () {
             this.$output.text('');
         };
         return Output;
     })();
     C2JS.Output = Output;
-
     var FileModel = (function () {
         function FileModel(Name, Path) {
-            if (typeof Path === "undefined") { Path = ""; }
+            if (Path === void 0) { Path = ""; }
             this.SetName(Name, Path);
         }
         FileModel.prototype.SetName = function (text, Path) {
@@ -169,39 +146,31 @@ var C2JS;
             this.PathArray = Path.split("/");
             //this.BaseName = this.PathArray.join("_") + "_" + this.BaseName;
         };
-
         FileModel.prototype.GetName = function () {
             return this.Name;
             //return this.PathArray.join("_") + "_" + this.Name;
         };
-
         FileModel.prototype.GetNoPathName = function () {
             return this.Name;
         };
-
         FileModel.prototype.GetBaseName = function () {
             return this.BaseName;
         };
-
         FileModel.prototype.GetPath = function () {
             return this.Path;
         };
-
         FileModel.prototype.GetPathArray = function () {
             return this.PathArray;
         };
-
         FileModel.prototype.GetFullPathName = function () {
             return this.Path + "/" + this.Name;
         };
-
         FileModel.prototype.GetFullPathBaseName = function () {
             return this.Path + "/" + this.Name.replace(/\..*/, "");
         };
         return FileModel;
     })();
     C2JS.FileModel = FileModel;
-
     var FileLoader = (function () {
         function FileLoader() {
             this.UI = $('#file-name-lists');
@@ -211,14 +180,16 @@ var C2JS;
             var filename = location.pathname.split("/").pop();
             if (filename === "editor" || filename === "") {
                 filename = "program";
-            } else {
+            }
+            else {
                 filename = "subject" + filename;
             }
             var content = $("#file-content").text();
             var timestamp;
             if ($("#file-timestamp").text() !== "") {
                 timestamp = new Date($("#file-timestamp").text());
-            } else {
+            }
+            else {
                 timestamp = "";
             }
             var oldcontent = sessionStorage.getItem(filename + ".c");
@@ -231,24 +202,19 @@ var C2JS;
                     timestamp = oldtimestamp;
                 }
             }
-
             //if(content === "") {
             //content = GetHelloWorldSource();
             //}
             sessionStorage.setItem(filename + ".c", content);
             sessionStorage.setItem(filename + ".time", timestamp);
-
             this.FileModel = new FileModel(filename + ".c");
         };
-
         FileLoader.prototype.Empty = function () {
             return this.FileModel == null;
         };
-
         FileLoader.prototype.GetCurrent = function () {
             return this.FileModel;
         };
-
         FileLoader.prototype.Show = function () {
             this.UI.prepend($('#file-list-template').tmpl(this.FileModel));
             $("#" + this.GetCurrent().GetBaseName()).parent().addClass('active');
@@ -259,7 +225,6 @@ var C2JS;
         return FileLoader;
     })();
     C2JS.FileLoader = FileLoader;
-
     var FileCollection = (function () {
         function FileCollection() {
             this.FileModels = [];
@@ -275,16 +240,13 @@ var C2JS;
                 if (localStorage.key(i) == this.defaultNameKey || !key.match(/.*\.c/)) {
                     continue;
                 }
-
                 path = keyArray.join("/");
-
                 var file = new FileModel(key, path);
                 var index = this.FileModels.push(file) - 1;
                 if (localStorage.key(i) == this.ActiveFileName) {
                     this.ActiveFileIndex = index;
                 }
             }
-
             //First access for c2js
             if (this.FileModels.length == 0) {
                 var pArray = this.ActiveFileName.split("_");
@@ -302,7 +264,6 @@ var C2JS;
             this.UI.prepend($('#file-list-template').tmpl([NewFile]));
             $("#" + NewFile.GetBaseName()).click(callback);
         };
-
         FileCollection.prototype.GetIndexOf = function (BaseName) {
             for (var i = 0; i < this.FileModels.length; i++) {
                 if (this.FileModels[i].GetBaseName() == BaseName) {
@@ -311,23 +272,19 @@ var C2JS;
             }
             return -1;
         };
-
         FileCollection.prototype.GetCurrent = function () {
             return this.FileModels[this.ActiveFileIndex];
         };
-
         FileCollection.prototype.RemoveActiveClass = function () {
             if (!this.Empty()) {
                 $("#" + this.GetCurrent().GetBaseName()).parent().removeClass('active');
             }
         };
-
         FileCollection.prototype.AddActiveClass = function () {
             if (!this.Empty()) {
                 $("#" + this.GetCurrent().GetBaseName()).parent().addClass('active');
             }
         };
-
         FileCollection.prototype.SetCurrent = function (BaseName) {
             this.RemoveActiveClass();
             this.ActiveFileName = BaseName + '.c';
@@ -335,7 +292,6 @@ var C2JS;
             this.AddActiveClass();
             localStorage.setItem(this.defaultNameKey, this.ActiveFileName);
         };
-
         FileCollection.prototype.Show = function (callback) {
             this.UI.prepend($('#file-list-template').tmpl(this.FileModels));
             this.AddActiveClass();
@@ -343,7 +299,6 @@ var C2JS;
                 $("#" + this.FileModels[i].GetBaseName()).click(callback);
             }
         };
-
         FileCollection.prototype.RemoveByBaseName = function (BaseName) {
             var i = this.GetIndexOf(BaseName);
             if (i == -1) {
@@ -353,7 +308,6 @@ var C2JS;
             this.FileModels.splice(i, 1);
             localStorage.removeItem(BaseName + '.c');
         };
-
         FileCollection.prototype.Rename = function (oldBaseName, newname, contents, Callback, DB, path) {
             if (path === "")
                 path = "default";
@@ -363,7 +317,6 @@ var C2JS;
             this.SetCurrent(file.GetBaseName());
             DB.Save(file.GetName(), contents);
         };
-
         FileCollection.prototype.Remove = function (BaseName) {
             if (this.FileModels.length > 0) {
                 var removedIndex = this.GetIndexOf(BaseName);
@@ -373,7 +326,6 @@ var C2JS;
                 this.AddActiveClass();
             }
         };
-
         FileCollection.prototype.Clear = function () {
             if (this.FileModels.length > 0) {
                 $(".file-tab").remove();
@@ -383,11 +335,9 @@ var C2JS;
                 }
             }
         };
-
         FileCollection.prototype.Empty = function () {
             return this.FileModels.length == 0;
         };
-
         FileCollection.prototype.MakeUniqueName = function (Name) {
             for (var i = 0; i < this.FileModels.length; i++) {
                 if (this.FileModels[i].GetName() == Name) {
@@ -396,7 +346,6 @@ var C2JS;
             }
             return Name;
         };
-
         FileCollection.prototype.GenerateFTree = function () {
             for (var i = 0; i < this.FileModels.length; i++) {
                 var fi = this.Tree.FIndex;
@@ -408,7 +357,6 @@ var C2JS;
                         fi[pArray[j]] = ft.length - 1;
                         fi[ft.length - 1] = [];
                     }
-
                     ft = ft[fi[pArray[j]]].children;
                     fi = fi[fi[pArray[j]]];
                 }
@@ -418,7 +366,6 @@ var C2JS;
         return FileCollection;
     })();
     C2JS.FileCollection = FileCollection;
-
     var SourceDB = (function () {
         function SourceDB() {
         }
@@ -430,29 +377,24 @@ var C2JS;
                 sessionStorage.setItem(timeName, date.toString());
             }
         };
-
         SourceDB.prototype.Load = function (fileName) {
             return sessionStorage.getItem(fileName);
         };
-
         SourceDB.prototype.Delete = function (fileName) {
             return sessionStorage.removeItem(fileName);
         };
-
         SourceDB.prototype.Exist = function (fileName) {
             return sessionStorage.getItem(fileName) != null;
         };
         return SourceDB;
     })();
     C2JS.SourceDB = SourceDB;
-
     function getSubjectId() {
         var pathes = location.pathname.split("/");
         var _subjectId = pathes[pathes.length - 1];
         return (_subjectId == "editor") ? -1 : parseInt(_subjectId);
     }
     C2JS.getSubjectId = getSubjectId;
-
     function Compile(source, option, filename, isCached, Context, callback, onerror) {
         $("#peditor").hide();
         $("#poplar-title").hide();
@@ -468,18 +410,17 @@ var C2JS;
                 error: onerror
             });
             saveInServer(subjectId, source);
-        } else {
+        }
+        else {
             setTimeout(callback, 200, Context);
         }
     }
     C2JS.Compile = Compile;
-
     function postActivity(type, data) {
         var subjectId = getSubjectId();
         var callback = function () {
             console.log("Activity ok.");
         };
-
         $.ajax({
             type: "POST",
             url: Config.basePath + "/activity",
@@ -491,7 +432,6 @@ var C2JS;
         });
     }
     C2JS.postActivity = postActivity;
-
     function saveInServer(subjectId, editorContent) {
         var callback = function () {
             console.log("ok.");
@@ -510,22 +450,21 @@ var C2JS;
         });
     }
     C2JS.saveInServer = saveInServer;
-
     function Run(source, ctx, out) {
         ctx.source = source;
         var Module = { print: function (x) {
-                out.PrintFromC(x);
-            } };
-        try  {
+            out.PrintFromC(x);
+        } };
+        try {
             var exe = new Function("Module", source);
             exe(Module);
-        } catch (e) {
+        }
+        catch (e) {
             out.Print(e);
         }
         out.Prompt();
     }
     C2JS.Run = Run;
-
     function TranslateMessageToJapanese(text) {
         text = text.replace(/&nbsp;/g, " ");
         var wordtable = {
@@ -602,7 +541,6 @@ var C2JS;
         rules["excess elements in array initializer"] = (function () {
             return "配列初期化子の要素が配列のサイズに対して多すぎます";
         });
-
         rules['expected "FILENAME" or <FILENAME>'] = (function () {
             return 'インクルードファイル名は "ファイル名" または <ファイル名> と書く必要があります';
         });
@@ -699,7 +637,6 @@ var C2JS;
         rules["'(.*?)' declared as an array with a negative size"] = (function () {
             return "負のサイズの配列は宣言できません";
         });
-
         rules["to match this '{'"] = (function () {
             return "ブロックは以下の位置で開始しています";
         });
@@ -742,13 +679,13 @@ var C2JS;
         rules["remove the 'if' if its condition is always false"] = (function () {
             "本当に常に真でよい場合、if文は不要です";
         });
-
         for (var rule in rules) {
-            try  {
+            try {
                 if (text.match(new RegExp(rule))) {
                     return RegExp.leftContext + rules[rule]() + RegExp.rightContext;
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 console.log(e);
                 console.log(rule);
             }
@@ -756,20 +693,16 @@ var C2JS;
         return text;
     }
     C2JS.TranslateMessageToJapanese = TranslateMessageToJapanese;
-
     function ConvertTerminalColor(text) {
         return text.replace(/\[31m(.*)\[0m/g, '<span class="text-danger">$1</span>');
     }
-
     function ReplaceNewLine(text) {
         return text.replace(/[\r\n|\r|\n]/g, "<br>\n");
     }
-
     function FormatMessage(text, filename) {
         text = text.replace(/<U\+(.{4})>/g, function (all, code) {
             return String.fromCharCode(parseInt(code, 16));
         }).replace(/ERROR.*$/gm, "").replace(/</gm, "&lt;").replace(/>/gm, "&gt;");
-
         var textlines = text.split(/[\r\n|\r|\n]/g);
         for (var i = 0; i < textlines.length; ++i) {
             if (textlines[i].lastIndexOf(filename, 0) == 0) {
@@ -803,19 +736,15 @@ var C2JS;
                 }
             }
         }
-
         return textlines.join("<br>\n").replace(/(\d+).\d+: (note):(.*)$/gm, " <b>line $1</b>: <span class='label label-info'>$2</span> <span class='text-info'>$3</span>").replace(/(\d+).\d+: (warning):(.*)$/gm, " <b>line $1</b>: <span class='label label-warning'>$2</span> <span class='text-warning'>$3</span>").replace(/(\d+).\d+: (error):(.*)$/gm, " <b>line $1</b>: <span class='label label-danger'>$2</span> <span class='text-danger'>$3</span>").replace(/(\d+).\d+: (fatal error):(.*)$/gm, " <b>line $1</b>: <span class='label label-danger'>$2</span> <span class='text-danger'>$3</span>");
     }
-
     function FormatFilename(text, fileName) {
         return text.replace(/\/.*\.c/g, fileName + ".c").replace(/\/.*\/(.*\.h)/g, "$1");
     }
-
     function FormatClangErrorMessage(text, fileName) {
         return FormatMessage(FormatFilename(ConvertTerminalColor(text), fileName), fileName);
     }
     C2JS.FormatClangErrorMessage = FormatClangErrorMessage;
-
     function CountUTFChar(text) {
         var cnt = 0;
         text.replace(/<U\+(.{4})>/g, function (all, code) {
@@ -825,14 +754,12 @@ var C2JS;
         return cnt;
     }
     C2JS.CountUTFChar = CountUTFChar;
-
     function UnescapeUTFChar(text) {
         return text.replace(/<U\+(.{4})>/g, function (all, code) {
             return String.fromCharCode(parseInt(code, 16));
         });
     }
     C2JS.UnescapeUTFChar = UnescapeUTFChar;
-
     function ProsessErrorMessage(text, fileName) {
         var errorObject = ClangErrorParser.parse(text);
         var annotations = [];
@@ -843,7 +770,6 @@ var C2JS;
             var code;
             var session = Aspen.Editor.editor.getSession();
             var row = message.position.line - 1;
-
             line = "<b>" + (Aspen.Language == "ja" ? "" : "line") + message.position.line + (Aspen.Language == "ja" ? "行目" : "") + "</b>:";
             message.text = UnescapeUTFChar(message.text).replace(/</gm, "&lt;").replace(/>/gm, "&gt;");
             if (Aspen.Language == "ja") {
@@ -870,7 +796,6 @@ var C2JS;
                 code = "<code>" + message.code + "</code>";
                 body = body + "<br>" + code;
                 var sp = "";
-
                 for (var i = 0; i < message.position.column - 1 - utfCount * 2; i++) {
                     sp = sp + "&nbsp;";
                 }
@@ -881,9 +806,7 @@ var C2JS;
                     body = body + "<br>" + insertion;
                 }
             }
-
             Aspen.Output.PrintLn(line + " " + label + " " + body);
-
             var range = session.highlightLines(row, row, "error_line");
             Aspen.Editor.errorLineIds.push(range.id);
             annotations.push({
@@ -896,32 +819,28 @@ var C2JS;
             //message.text
             //message.type
         });
-
         Aspen.Editor.editor.getSession().setAnnotations(annotations);
     }
     C2JS.ProsessErrorMessage = ProsessErrorMessage;
-
     function CheckFileName(name, DB, path) {
-        if (typeof path === "undefined") { path = "default"; }
+        if (path === void 0) { path = "default"; }
         var filename = name;
         if (path == "") {
             path = "default";
-        } else {
+        }
+        else {
             path = path.split("/").join("_");
         }
         if (filename == null) {
             return null;
         }
-
         if (filename == "") {
             filename = "file" + new Date().toJSON().replace(/\/|:|\./g, "-").replace(/20..-/, "").replace(/..-..T/, "").replace(/Z/g, "").replace(/-/g, "");
         }
-
         if (filename.match(/[\s\t\\/:\*\?\"\<\>\|]+/)) {
             alert("This file name is incorrect.");
             return null;
         }
-
         if (filename.match(/.*\.c/) == null) {
             filename += '.c';
         }
@@ -932,17 +851,14 @@ var C2JS;
         return filename;
     }
     C2JS.CheckFileName = CheckFileName;
-
     function ConfirmAllRemove() {
         return confirm('All items will be delete immediately. Are you sure you want to continue?');
     }
     C2JS.ConfirmAllRemove = ConfirmAllRemove;
-
     function ConfirmToRemove(BaseName) {
         return confirm('The item "' + BaseName + '.c" will be delete immediately. Are you sure you want to continue?');
     }
     C2JS.ConfirmToRemove = ConfirmToRemove;
-
     function test_AB() {
         var s = $.cookie("studentNumber");
         if (!s) {
@@ -959,21 +875,17 @@ var C2JS;
     }
     C2JS.test_AB = test_AB;
 })(C2JS || (C2JS = {}));
-
 var Aspen = {};
-
 $(function () {
     var Editor = new C2JS.Editor($("#editor"));
     var Output = new C2JS.Output($("#output"));
     var DB = new C2JS.SourceDB();
-    var Context = {};
+    var Context = {}; //TODO refactor C2JS.Response
     var Files = new C2JS.FileLoader();
-
     var peditor = ace.edit("peditor");
     peditor.setTheme("ace/theme/xcode");
     peditor.getSession().setMode("ace/mode/c_cpp");
     peditor.setFontSize(14);
-
     //初期ページでは提出ボタンを出さないようにする
     if (location.pathname == Config.basePath + "/" || location.pathname == Config.basePath + "/editor") {
         if (location.pathname == Config.basePath + "/") {
@@ -981,16 +893,15 @@ $(function () {
         }
         var submit_button = $("#submit-file");
         submit_button.hide();
-    } else {
+    }
+    else {
         //提出ボタンの挙動
         $("#submit-file").click(function (event) {
             var subjectId = C2JS.getSubjectId();
             var callback = function (res) {
                 $("#submit-confirm-view").children().remove();
                 var compiled = _.template($("#submit-confirm-template").text());
-
                 $("#submit-confirm-view").append(compiled({ submit_date: res.date }));
-
                 //alert('提出しました！');
                 swal({ title: "", text: '提出しました！', type: "success", timer: 100000 });
             };
@@ -1006,7 +917,6 @@ $(function () {
             C2JS.postActivity('submit', { content: Editor.GetValue() });
         });
     }
-
     Aspen.Editor = Editor;
     Aspen.Output = Output;
     Aspen.Source = DB;
@@ -1027,9 +937,7 @@ $(function () {
     Aspen.Debug.PrintC = function (message) {
         Output.PrintFromC(message);
     };
-
     var changeFlag = true;
-
     var subjectId = C2JS.getSubjectId();
     Editor.OnChange(function (e) {
         if (!Files.Empty()) {
@@ -1037,17 +945,14 @@ $(function () {
             DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
         }
     });
-
     var copiedText = "";
     peditor.on("copy", function (text) {
         copiedText = text;
     });
-
     Editor.OnCopy(function (text) {
         copiedText = text;
         console.log(text);
     });
-
     Editor.OnPaste(function (text) {
         console.log(text.text);
         if (location.pathname != Config.basePath + "/") {
@@ -1062,40 +967,32 @@ $(function () {
         ;
     });
     var running = false;
-
     var DisableUI = function () {
         $(".disabled-on-running").addClass("disabled");
         Editor.Disable();
         running = true;
     };
-
     var EnableUI = function () {
         $(".disabled-on-running").removeClass("disabled");
         Editor.Enable();
         running = false;
     };
-
     var ChangeCurrentFile = function (e) {
         if (running)
             return;
-
         //Files.SetCurrent((<any>e.target).id);
         Editor.SetValue(DB.Load(Files.GetCurrent().GetName()));
         Editor.ClearHistory();
     };
-
     if (location.pathname != Config.basePath + "/") {
         $(".sidebar-btn-right").css({ display: "inline" });
         $(".sidebar-right").css({ display: "inline" });
     }
-
     $("#poplar").click(function (ev) {
         peditor.setValue("");
         var content = Editor.GetValue();
         var subjectId = C2JS.getSubjectId();
-        var onerror = function () {
-            return console.log("error");
-        };
+        var onerror = function () { return console.log("error"); };
         var callback = function (res) {
             if ($(".sidebar-right").css("opacity") == "0") {
                 $(".sidebar-btn-right").click();
@@ -1105,7 +1002,6 @@ $(function () {
             peditor.setValue(res.source);
             peditor.clearSelection();
             peditor.gotoLine(0);
-
             console.log(res);
         };
         $.ajax({
@@ -1118,42 +1014,40 @@ $(function () {
             error: onerror
         });
     });
-
     Files.Show();
-
     //Files.Show(ChangeCurrentFile);
     //Files.GenerateFTree();
     Output.Prompt();
-
     Aspen.Debug.SetRunning = function (flag) {
         if (flag) {
             DisableUI();
-        } else {
+        }
+        else {
             EnableUI();
         }
     };
-
     var FindErrorNumbersInErrorMessage = function (message) {
         var errorLineNumbers = [];
         jQuery.each(message.split(".c"), (function (k, v) {
             var match = v.match(/:(\d+):\d+:\s+error/);
             if (match && match[1]) {
                 var m = v;
-                try  {
+                try {
                     m = v.split("\n")[0].split("error:")[1].trim();
                     if (Aspen.Language == "ja") {
                         m = C2JS.TranslateMessageToJapanese(m);
                     }
-                } catch (e) {
+                }
+                catch (e) {
                     console.log(e);
-                } finally {
+                }
+                finally {
                     errorLineNumbers.push({ n: match[1], t: m });
                 }
             }
         }));
         return errorLineNumbers;
     };
-
     if ($('#file-reset').length > 0) {
         $('#reset-button').show().click(function () {
             swal({
@@ -1165,13 +1059,13 @@ $(function () {
                 confirmButtonColor: "#DD6B55",
                 confirmButtonText: "はい",
                 cancelButtonText: "いいえ",
-                closeOnConfirm: false }, function () {
+                closeOnConfirm: false
+            }, function () {
                 Editor.SetValue($("#file-reset").text());
                 swal({ title: "リセットしました", text: "心機一転がんばりましょう！", type: "success", timer: 100000 });
             });
         });
     }
-
     var CompileCallback = function (e) {
         if (Files.Empty() || running)
             return;
@@ -1182,18 +1076,16 @@ $(function () {
         }
         var src = Editor.GetValue();
         var file = Files.GetCurrent();
-        var opt = '-m';
+        var opt = '-m'; //TODO
         Output.Clear();
         Output.Prompt();
         Output.PrintLn('gcc ' + file.GetName() + ' -o ' + file.GetBaseName());
         DisableUI();
         Editor.RemoveAllErrorLine();
-
         C2JS.Compile(src, opt, file.GetName(), changeFlag, Context, function (res) {
             console.log(changeFlag);
             console.log(res);
-
-            try  {
+            try {
                 changeFlag = false;
                 if (res == null) {
                     Output.PrintErrorLn('Sorry, the server is something wrong.');
@@ -1201,19 +1093,18 @@ $(function () {
                 }
                 if (res.error.length > 0) {
                     C2JS.ProsessErrorMessage(res.error, file.GetBaseName());
-                    //Output.PrintLn(C2JS.FormatClangErrorMessage(res.error, file.GetBaseName()));
-                    //Editor.SetErrorLines(FindErrorNumbersInErrorMessage(res.error));
                 }
                 Output.Prompt();
-
                 Context.error = res.error;
                 if (!res.error.match("error:")) {
                     Output.PrintLn('./' + file.GetBaseName());
                     C2JS.Run(res.source, Context, Output);
-                } else {
+                }
+                else {
                     Context.source = null;
                 }
-            } finally {
+            }
+            finally {
                 EnableUI();
             }
         }, function () {
@@ -1221,10 +1112,8 @@ $(function () {
             EnableUI();
         });
     };
-
     $("#compile").click(CompileCallback);
     $("#compile").tooltip({ placement: "bottom", html: true });
-
     var SaveFunction = function (e) {
         if (Files.Empty())
             return;
@@ -1232,11 +1121,9 @@ $(function () {
         saveAs(blob, Files.GetCurrent().GetName());
     };
     $("#save-file-menu").click(SaveFunction);
-
     $("#open-file-menu").click(function (e) {
         $("#file-open-dialog").click();
     });
-
     var MarkingCallback = function (e) {
         var value = $("#marking-value").val();
         var subjectId = C2JS.getSubjectId();
@@ -1248,7 +1135,6 @@ $(function () {
         var onerror = function () {
             console.log("error");
         };
-
         $.ajax({
             type: "POST",
             url: Config.basePath + "/marking/user/" + userId + "/subject/" + subjectId,
@@ -1260,21 +1146,17 @@ $(function () {
         });
         console.log(value);
     };
-
     $("#marking").click(MarkingCallback);
-
     function getUserId() {
         var pathes = location.pathname.split("/");
         var _userId = pathes[pathes.length - 3];
         return parseInt(_userId);
     }
-
     $(window).resize(function () {
         var width = $(window).width();
         var sidebarW = $('.sidebar-right').width();
         $('.sidebar-right').css("left", width - sidebarW + "px");
     });
-
     var RSidebarBtnClickFunction = function () {
         var sbpos = parseInt($(".sidebar-right").css("left").replace(/px/g, ""));
         var width = $(window).width();
@@ -1285,7 +1167,8 @@ $(function () {
             $('.sidebar-right').css("left", width - sidebarW + "px");
             $('.demo-editor').css("margin-right", sidebarW + "px");
             $('.btnglyph').css("transform", "rotate(180deg)");
-        } else {
+        }
+        else {
             $('.sidebar-btn-right').css("opacity", "1");
             $('.sidebar-right').css("left", "100%");
             $('.demo-editor').css("margin-right", "0");
@@ -1299,35 +1182,33 @@ $(function () {
         $(".sidebar-btn-right").css("display", "inline");
     }
     $('.sidebar-btn-right').click(RSidebarBtnClickFunction);
-
     var endsWith = function (str, suffix) {
         return str.indexOf(suffix, str.length - suffix.length) !== -1;
     };
-
     /*
-    $("#file-open-dialog").change(function(e: Event) {
-    var file: File = this.files[0];
-    if(file) {
-    if(!endsWith(file.name, ".c")){
-    alert("Unsupported file type.\nplease select '*.c' file.");
-    return;
-    }
-    var reader = new FileReader();
-    reader.onerror = (e: Event)=> {
-    alert(<any>e);
-    };
-    reader.onload = (e: Event)=> {
-    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
-    var fileModel = new C2JS.FileModel(Files.MakeUniqueName(file.name));
-    Files.Append(fileModel, ChangeCurrentFile);
-    Files.SetCurrent(fileModel.GetBaseName());
-    Editor.SetValue((<any>e.target).result);
-    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
-    Editor.ClearHistory();
-    };
-    reader.readAsText(file, 'utf-8');
-    }
-    });
+        $("#file-open-dialog").change(function(e: Event) {
+            var file: File = this.files[0];
+            if(file) {
+                if(!endsWith(file.name, ".c")){
+                    alert("Unsupported file type.\nplease select '*.c' file.");
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onerror = (e: Event)=> {
+                    alert(<any>e);
+                };
+                reader.onload = (e: Event)=> {
+                    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
+                    var fileModel = new C2JS.FileModel(Files.MakeUniqueName(file.name));
+                    Files.Append(fileModel, ChangeCurrentFile);
+                    Files.SetCurrent(fileModel.GetBaseName());
+                    Editor.SetValue((<any>e.target).result);
+                    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
+                    Editor.ClearHistory();
+                };
+                reader.readAsText(file, 'utf-8');
+            }
+        });
     */
     var OnFilesBecomeEmpty = function () {
         $("#delete-file").hide();
@@ -1340,84 +1221,83 @@ $(function () {
         $(".disabled-on-files-empty").removeClass("disabled");
         Editor.Enable();
     };
-
     /* var CreateFileFunction = (e: any) => {
-    if(running) return;
-    var path: string;
-    if(e.currentTarget.id === "create-file") {
-    path = "";
-    } else {
-    path = Files.Tree.getCurrentPath();
-    }
-    if(path !== "" && Files.Tree.getCurrentType() == "file"){
-    alert("フォルダを選択してください");
-    return;
-    }
-    var pathMassage =path? "\"" + path + "/\"":"";
-    var filename = prompt("Please enter the file name." + pathMassage, C2JS.CheckFileName("", DB));
-    filename = C2JS.CheckFileName(filename, DB, path);
-    if(filename == null) {
-    return;
-    }
-    if(path !== "") {
-    Files.Tree.setFile(Files.Tree.getSelectedNode(), filename);
-    } else {
-    Files.Tree.setFile(Files.Tree.getDefaultNode(), filename);
-    }
-    var file = new C2JS.FileModel(filename, path);
-    Files.Append(file, ChangeCurrentFile);
-    Files.SetCurrent(file.GetBaseName());
-    OnFilesBecomeNotEmpty();
-    Editor.ResetHelloWorld();
-    Editor.ClearHistory();
+        if(running) return;
+        var path: string;
+        if(e.currentTarget.id === "create-file") {
+          path = "";
+        } else {
+          path = Files.Tree.getCurrentPath();
+        }
+        if(path !== "" && Files.Tree.getCurrentType() == "file"){
+          alert("フォルダを選択してください");
+          return;
+        }
+        var pathMassage =path? "\"" + path + "/\"":"";
+        var filename = prompt("Please enter the file name." + pathMassage, C2JS.CheckFileName("", DB));
+        filename = C2JS.CheckFileName(filename, DB, path);
+        if(filename == null) {
+            return;
+        }
+        if(path !== "") {
+          Files.Tree.setFile(Files.Tree.getSelectedNode(), filename);
+        } else {
+          Files.Tree.setFile(Files.Tree.getDefaultNode(), filename);
+        }
+        var file = new C2JS.FileModel(filename, path);
+        Files.Append(file, ChangeCurrentFile);
+        Files.SetCurrent(file.GetBaseName());
+        OnFilesBecomeNotEmpty();
+        Editor.ResetHelloWorld();
+        Editor.ClearHistory();
     };
     (<any>$("#create-file")).tooltip({placement: "bottom", html: true});
     $("#create-file").click(CreateFileFunction);
     $("#create-file-menu").click(CreateFileFunction);
     $('#add-file-btn').click(CreateFileFunction);
-    
+
     var RenameFunction = (e: Event) => {
-    if(Files.Empty() || running) return;
-    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
-    var oldfilebasename = Files.GetCurrent().GetNoPathName().split(".")[0];
-    var oldfilepath = Files.GetCurrent().GetPathArray().join("_");
-    var oldfilecontents = Editor.GetValue();
-    
-    var filename = prompt("Rename: Please enter the file name.", oldfilebasename);
-    filename = C2JS.CheckFileName(filename, DB, oldfilepath);
-    if(filename == null) {
-    return;
-    }
-    Files.Rename(oldfilebasename, filename, oldfilecontents, ChangeCurrentFile, DB, oldfilepath);
-    Editor.SetValue(oldfilecontents);
-    DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
+        if(Files.Empty() || running) return;
+        DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
+        var oldfilebasename = Files.GetCurrent().GetNoPathName().split(".")[0];
+        var oldfilepath = Files.GetCurrent().GetPathArray().join("_");
+        var oldfilecontents = Editor.GetValue();
+
+        var filename = prompt("Rename: Please enter the file name.", oldfilebasename);
+        filename = C2JS.CheckFileName(filename, DB, oldfilepath);
+        if(filename == null) {
+            return;
+        }
+        Files.Rename(oldfilebasename, filename, oldfilecontents, ChangeCurrentFile, DB, oldfilepath);
+        Editor.SetValue(oldfilecontents);
+        DB.Save(Files.GetCurrent().GetName(), Editor.GetValue());
     };
     $("#rename-menu").click(RenameFunction);
-    
+
     var DeleteFileFunction = (e: Event) => {
-    if(Files.Empty() || running) return;
-    var BaseName = Files.GetCurrent().GetBaseName();
-    if(C2JS.ConfirmToRemove(BaseName)) {
-    Files.Remove(BaseName);
-    if(Files.Empty()){
-    OnFilesBecomeEmpty();
-    }else{
-    Editor.SetValue(DB.Load(Files.GetCurrent().GetName()));
-    }
-    }
+        if(Files.Empty() || running) return;
+        var BaseName = Files.GetCurrent().GetBaseName();
+        if(C2JS.ConfirmToRemove(BaseName)) {
+            Files.Remove(BaseName);
+            if(Files.Empty()){
+                OnFilesBecomeEmpty();
+            }else{
+                Editor.SetValue(DB.Load(Files.GetCurrent().GetName()));
+            }
+        }
     };
-    
+
     (<any>$("#delete-file")).tooltip({placement: "bottom", html: true});
     $("#delete-file").click(DeleteFileFunction);
     $("#delete-file-menu").click(DeleteFileFunction);
-    
+
     var DeleteAllFilesFunction = (e: Event) => {
-    if(Files.Empty() || running) return;
-    var BaseName = Files.GetCurrent().GetBaseName();
-    if(C2JS.ConfirmAllRemove()) {
-    Files.Clear();
-    }
-    OnFilesBecomeEmpty();
+        if(Files.Empty() || running) return;
+        var BaseName = Files.GetCurrent().GetBaseName();
+        if(C2JS.ConfirmAllRemove()) {
+            Files.Clear();
+        }
+        OnFilesBecomeEmpty();
     };
     $("#delete-all-file-menu").click(DeleteAllFilesFunction);
     */
@@ -1425,7 +1305,6 @@ $(function () {
         Aspen.Language = this.checked ? "ja" : "en";
     });
     $("#JpModeCheck").click(JpModeCheckFunction);
-
     document.onkeydown = function (ev) {
         if (ev.ctrlKey) {
             switch (ev.keyCode) {
@@ -1434,7 +1313,6 @@ $(function () {
                     ev.stopPropagation();
                     CompileCallback(ev);
                     return;
-
                 case 83:
                     ev.preventDefault();
                     ev.stopPropagation();
@@ -1443,17 +1321,15 @@ $(function () {
             }
         }
     };
-
     $(window).on("beforeunload", function (e) {
         DB.Save(Files.GetCurrent().GetName(), Editor.GetValue(), true);
     });
-
     if (DB.Exist(Files.GetCurrent().GetName())) {
         Editor.SetValue(DB.Load(Files.GetCurrent().GetName()));
-    } else if ($("#file-content").length > 0) {
+    }
+    else if ($("#file-content").length > 0) {
         Editor.SetValue($("#file-content").text());
     }
-
     if (_ua.Trident && _ua.ltIE9) {
         $("#NotSupportedBrouserAlert").show();
         DisableUI();

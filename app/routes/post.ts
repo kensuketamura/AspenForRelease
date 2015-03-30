@@ -151,7 +151,7 @@ router.post('/register_student', function(req, res) {
   if(!users) return;
   addStudents(users).then(function() {
     console.log("res");
-    res.redirect(config.base.path + '/'); //FIXME
+    res.redirect(config.base.path + '/register_student'); //FIXME
   });
 
 });
