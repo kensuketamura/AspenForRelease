@@ -287,7 +287,7 @@ function loadStudentHome(req, res, user) {
 
 function loadAdminHome(req, res) {
   //TODO:教師用画面の作成
-  var tableHead = ["学籍番号", "氏名", "課題名", "提出状況", "締切"];
+  var tableHead = ["学籍番号", "氏名", "課題名", "評価", "提出状況", "締切"];
 
   console.log("admin page")
 
@@ -362,10 +362,12 @@ function createAllSubmitViews(submits, students, subjects) {
 
         lodash.forEach(students, (student) => {
             var status = 0;
+            var marks = "-";
 
             var submit = findByUserId(submits_eachSubject, student.id)[0];
             if(submit) {
                 status = submit.status? submit.status : 0;
+                marks = submit.marks;
             }
             result.push({
                 id: subject.id,
@@ -373,6 +375,7 @@ function createAllSubmitViews(submits, students, subjects) {
                 student_name: student.name,
                 student_number: student.studentNumber,
                 subject_name: subject.name,
+                marks: marks,
                 status: getStatus(status, submit),
                 endAt: formatEndAt(subject.endAt),
                 endAtTime: subject.endAt.getTime(),
