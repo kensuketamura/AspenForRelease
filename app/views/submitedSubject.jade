@@ -35,7 +35,7 @@ script#submit-confirm-template(type='text/html')
           | &nbsp;
           | 採点
         | &nbsp;
-        input#marking-value(type="text", name="markingValue", placeholder="点数", required autofocus)
+        input#marking-value(type="text", name="markingValue", placeholder="点数", required autofocus, value=marks)
         | &nbsp;
 
     +template('file-list-template')
@@ -58,6 +58,7 @@ script#submit-confirm-template(type='text/html')
       #output.panel-body
 //include sidebar
 +template('file-list-template')
+
   li.file-tab.disabled-on-running
     a(href='#',id='${BaseName}') ${Name}
     //a(href='#', id='close${BaseName}')

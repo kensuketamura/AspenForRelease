@@ -106,10 +106,10 @@ router.get('/editor/:name', function(req, res) {
         type: 'subject_open',
         data: {},
         subjectId: req.params.name,
-        userId: req.signedCookies.sessionUserId
+        userId: req.signedCookies.user_student_id
     };
 
-    db.User.find({where: {studentNumber: req.signedCookies.user_student_id}})
+    db.User.findByStudentNumber(req.signedCookies.user_student_id)
                 .then(function(user) {
                     userId = user.id;
                     user_name = user.name;
@@ -189,18 +189,37 @@ router.get('/user/:userid', function(req, res) {
 
 router.get('/user/:userId/subject/:subjectId', function(req, res) {
   checkAdmin(req, res).then(function(){
-    db.SubmitStatus.find({where: db.Sequelize.and({UserId: req.params.userId},{SubjectId: req.params.subjectId})})
+    var subject_name = "";
+    var subject_content = "";
+    var subject_example = "";
+    db.Subject.find({where: {id: req.params.subjectId}})
+      .then(function(subject){
+        subject_name = subject.name;
+        subject_content = subject.content;
+        subject_example = subject.example;
+        return db.SubmitStatus.find({where: db.Sequelize.and({UserId: req.params.userId},{SubjectId: req.params.subjectId})});
+      })
       .then(function(submit) {
         if(submit) {
           res.render('source_view', {
+            has_content: true,
+            content: subject_example,
+            subject_reset: subject_content,
+            example: submit.content,
+            marks: submit.marks,
             basePath: config.base.path,
-            content: submit.content
+            timestamp: submit.updatedAt,
+            md: marked,
+            title: subject_name,
+            is_show_content: true,
+            status_submitted: submit.status > 0,
+            status_date: formatDate('YYYY-MM-DD HH:mm', submit.updatedAt),
           });
         } else {
           res.send('Not yet.');
         }
       });
-  });
+    });
 });
 
 router.get('/subject', function(req, res) {
@@ -268,7 +287,7 @@ function loadStudentHome(req, res, user) {
 
 function loadAdminHome(req, res) {
   //TODO:教師用画面の作成
-  var tableHead = ["学籍番号", "氏名", "課題名", "提出状況", "締切"];
+  var tableHead = ["学籍番号", "氏名", "課題名", "評価", "提出状況", "締切"];
 
   console.log("admin page")
 
@@ -343,10 +362,12 @@ function createAllSubmitViews(submits, students, subjects) {
 
         lodash.forEach(students, (student) => {
             var status = 0;
+            var marks = "-";
 
             var submit = findByUserId(submits_eachSubject, student.id)[0];
             if(submit) {
                 status = submit.status? submit.status : 0;
+                marks = submit.marks;
             }
             result.push({
                 id: subject.id,
@@ -354,6 +375,7 @@ function createAllSubmitViews(submits, students, subjects) {
                 student_name: student.name,
                 student_number: student.studentNumber,
                 subject_name: subject.name,
+                marks: marks,
                 status: getStatus(status, submit),
                 endAt: formatEndAt(subject.endAt),
                 endAtTime: subject.endAt.getTime(),

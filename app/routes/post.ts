@@ -69,6 +69,14 @@ router.post('/activity', function(req, res) {
     res.json({});
 });
 
+router.post('/marking/user/:userId/subject/:subjectId', function(req, res){
+  checkAdmin(req, res).then(function(){
+    return db.SubmitStatus.mark(req.body.markingValue, req.params.userId, req.params.subjectId, db.Sequelize);
+  }).then(function(){
+    res.json({});
+  });
+});
+
 router.post('/submit', function(req, res) {
     if(!req.signedCookies) {
         res.status(401).json({error: "error"});
@@ -224,5 +232,19 @@ router.post('/dummy/poplar', function(req, res) {
 router.post('/dummy/activity', function(req, res) {
     res.json({});
 });
+
+function checkAdmin(req, res) {
+  return db.User.login({studentNumber: req.signedCookies.user_student_id})
+    .then(function(user) {
+      if(user == null) {
+        throw 'no login'; //move to catch
+      }
+      if(!user.role_admin){
+        res.redirect(config.base.path + '/');
+      } else {
+        return
+      }
+    });
+}
 
 module.exports = router;
