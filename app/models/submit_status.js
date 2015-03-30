@@ -1,13 +1,13 @@
 ///<reference path="../../typings/express/express.d.ts" />
 ///<reference path="../../typings/node/node.d.ts" />
 /**
-* 提出状況を示す
-* @class SubmitStatus
-* @constructor
-* @param {Number} status 提出状況: 0=未提出, 1=提出済み, 2=合格, 3=再提出
-* @param {String} content 提出内容
-*
-*/
+ * 提出状況を示す
+ * @class SubmitStatus
+ * @constructor
+ * @param {Number} status 提出状況: 0=未提出, 1=提出済み, 2=合格, 3=再提出
+ * @param {String} content 提出内容
+ *
+ */
 module.exports = function (sequelize, DataTypes) {
     var SubmitStatus = sequelize.define('SubmitStatus', {
         status: {
@@ -31,20 +31,21 @@ module.exports = function (sequelize, DataTypes) {
                 SubmitStatus.belongsTo(models.User, { foreignKey: 'UserId' });
             },
             /**
-            * 提出
-            * @method submit
-            * @param {String} content 提出内容
-            * @param {Number} userId ユーザID
-            * @param {Number} subjectId 課題番号
-            * @return {Promise}
-            */
+             * 提出
+             * @method submit
+             * @param {String} content 提出内容
+             * @param {Number} userId ユーザID
+             * @param {Number} subjectId 課題番号
+             * @return {Promise}
+             */
             submit: function (content, userId, subjectId, seq) {
                 return SubmitStatus.find({ where: seq.and({ UserId: userId }, { SubjectId: subjectId }) }).then(function (submit) {
                     if (submit) {
                         submit.content = content;
                         submit.status = 1;
                         return submit.save();
-                    } else {
+                    }
+                    else {
                         console.log("hi");
                         return SubmitStatus.create({
                             UserId: userId,
@@ -56,26 +57,28 @@ module.exports = function (sequelize, DataTypes) {
                 });
             },
             /**
-            * 一時保存
-            * @method saveTemporary
-            * @param {String} content 提出内容
-            * @param {Number} userId ユーザID
-            * @param {Number} subjectId 課題番号
-            * @param {Promise} Promise promise
-            * @return {Promise}
-            */
+             * 一時保存
+             * @method saveTemporary
+             * @param {String} content 提出内容
+             * @param {Number} userId ユーザID
+             * @param {Number} subjectId 課題番号
+             * @param {Promise} Promise promise
+             * @return {Promise}
+             */
             saveTemporary: function (content, userId, subjectId, seq, Promise) {
                 return SubmitStatus.find({ where: seq.and({ UserId: userId }, { SubjectId: subjectId }) }).then(function (submit) {
                     if (submit) {
                         if (submit.status == 0) {
                             submit.content = content;
                             return submit.save();
-                        } else {
+                        }
+                        else {
                             return new Promise(function (resolve) {
                                 resolve(submit);
                             });
                         }
-                    } else {
+                    }
+                    else {
                         return SubmitStatus.create({
                             UserId: userId,
                             SubjectId: subjectId,
@@ -86,14 +89,14 @@ module.exports = function (sequelize, DataTypes) {
                 });
             },
             /**
-            * 採点
-            * @method mark
-            * @param {String} value 評価内容
-            * @param {Number} userId ユーザID
-            * @param {Number} subjectId 課題番号
-            * @param {Promise} Promise promise
-            * @return {Promise}
-            */
+             * 採点
+             * @method mark
+             * @param {String} value 評価内容
+             * @param {Number} userId ユーザID
+             * @param {Number} subjectId 課題番号
+             * @param {Promise} Promise promise
+             * @return {Promise}
+             */
             mark: function () {
             }
         }
