@@ -1,3 +1,6 @@
+///<reference path='../../typings/jquery/jquery_plugins.d.ts'/>
+///<reference path='../../typings/config/config.d.ts'/>
+
 $(function() {
   $("#button").on("click", function(e) {
     e.preventDefault();
