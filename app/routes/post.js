@@ -129,6 +129,34 @@ router.post('/register', function (req, res) {
     });
 });
 
+router.post('/register_student', function (req, res) {
+    var users = req.body.users;
+    console.log(users);
+    if (!users)
+        return;
+    addStudents(users).then(function () {
+        console.log("res");
+        res.redirect(config.base.path + '/'); //FIXME
+    });
+});
+
+function addStudents(arr) {
+    var student = arr.pop();
+    var name = student[0];
+    var role_admin = student[1];
+    var studentNumber = student[2];
+    var password = student[3];
+    var p = db.User.createStudent(name, studentNumber, password, role_admin);
+    if (arr.length > 0) {
+        return p.then(function () {
+            console.log(arr);
+            return addStudents(arr);
+        });
+    } else {
+        return p;
+    }
+}
+
 var post_compile_option = {
     hostname: config.compile.host,
     port: config.compile.port,
