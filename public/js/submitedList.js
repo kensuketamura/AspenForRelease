@@ -67,48 +67,44 @@ $(function () {
     });
 
     $(".output-submits").bind("click", function () {
-        // Note: The file system has been prefixed as of Google Chrome 12:
-        window.requestFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
-        window.requestFileSystem(window.TEMPORARY, 1 * 1024 * 1024, OutputCSV);
+        OutputCSV();
     });
 });
 
-function OutputCSV(fs) {
-    fs.root.getFile('data.csv', { create: true, exclusive: true }, function (fe) {
-        console.log("file");
-        fe.createWriter(function (fw) {
-            console.log("file");
-            fw.onwriteend = function (e) {
-                console.log('Write completed.');
-            };
-
-            fw.onerror = function (e) {
-                console.log('Write failed: ' + e.toString());
-            };
-
-            var cols;
-            var output = "学籍番号,氏名,課題名,評価,提出状況,締切,\r\n";
-            for (var data_i = 0; data_i < allData.length; data_i++) {
-                if ($(allData[data_i]).css("display") != "none") {
-                    cols = $(allData[data_i]).children();
-                    for (var col_i = 0; col_i < cols.length; col_i++) {
-                        if (col_i == 4) {
-                            output += ($(cols[col_i]).text()).replace(" 提出", "") + ",";
-                        } else {
-                            output += $(cols[col_i]).text() + ",";
-                        }
-                    }
-                    output += "\r\n";
+function OutputCSV() {
+    var cols;
+    var output = "学籍番号,氏名,課題名,評価,提出状況,締切,\r\n";
+    for (var data_i = 0; data_i < allData.length; data_i++) {
+        if ($(allData[data_i]).css("display") != "none") {
+            cols = $(allData[data_i]).children();
+            for (var col_i = 0; col_i < cols.length; col_i++) {
+                if (col_i == 4) {
+                    output += ($(cols[col_i]).text()).replace(" 提出", "") + ",";
+                } else {
+                    output += $(cols[col_i]).text() + ",";
                 }
             }
-            var bb = new Blob([output], { type: "text/plain" });
-            var csvFile = document.createElement('a');
-            csvFile.href = URL.createObjectURL(bb);
-            csvFile.download = 'AspenSubmitsData.csv';
-            csvFile.click();
-            console.log(output);
-        });
+            output += "\r\n";
+        }
+    }
+    var date = [
+        (((new Date()).getFullYear()).toString()).replace("20", ""),
+        ((new Date()).getMonth()).toString(),
+        ((new Date()).getDate()).toString(),
+        ((new Date()).getHours()).toString(),
+        ((new Date()).getMinutes()).toString()
+    ];
+    var dateStr = "";
+    date.forEach(function (d) {
+        dateStr += ((d.length < 2) ? ("0" + d) : d);
     });
+    var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    var blob = new Blob([bom, output], { type: "text/csv" });
+    var csvFile = document.createElement('a');
+    csvFile.href = (window.URL || window.webkitURL).createObjectURL(blob);
+    csvFile.download = 'AspenData' + dateStr + '.csv';
+    csvFile.click();
+    console.log(output);
 }
 
 function SearchPanelAction(id) {
