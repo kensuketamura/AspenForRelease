@@ -106,7 +106,7 @@ function OutputCSV(fs){
       }
       var bb = new Blob([output], {type:"text/plain"});
       var csvFile = document.createElement('a');
-      csvFile.href = fe.toURL();
+      csvFile.href = URL.createObjectURL(bb);
       (<any>csvFile).download = 'AspenSubmitsData.csv';
       csvFile.click();
       console.log(output);
