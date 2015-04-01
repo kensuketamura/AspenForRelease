@@ -237,7 +237,10 @@ router.get('/register_student', function (req, res) {
 router.get('/students', function (req, res) {
     checkAdmin(req, res).then(function () {
         console.log("/students is accessed");
-        res.render('students', { basePath: config.base.path });
+        db.User.getStudentList().then(function (users) {
+            var tableHead = ["学籍番号", "氏名", "パスワード"];
+            res.render('students', { basePath: config.base.path, users: users, tableHead: tableHead });
+        });
     });
 });
 

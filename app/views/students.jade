@@ -1,0 +1,36 @@
+extends layout
+
+block header
+  +css('/css/index.css')
+  +css('/css/editor.css')
+  style.
+    .site-wrapper {
+      padding-top: 3em;
+    }
+
+block loadFiles
+  +js('/vendor/jquery/jquery.tablesorter.js')
+
+block content
+  .site-wrapper
+    .site-wrapper-inner-center-off
+      .cover-container
+        include topbar
+        .inner.cover.shadow-off
+          .inner
+            .row
+              table.table.table-hover(id="allDataTable")
+                thead
+                  tr
+                  - for(var i = 0; i < tableHead.length; i++){
+                    th #{tableHead[i]}
+                  - }
+                tbody
+                  - for(var i = 0; i < users.length; i++){
+                  tr()
+                    td.userInList() #{users[i].studentNumber}
+                    td.userInList() #{users[i].name}
+                    td.userInList() #{users[i].password}
+                  - }
+            .mastfoot
+              .inner
