@@ -1,6 +1,17 @@
 ///<reference path='../../typings/jquery/jquery_plugins.d.ts'/>
 ///<reference path='../../typings/config/config.d.ts'/>
 $(function () {
+    document.getElementById('file').onchange = function () {
+        if (window.File) {
+            var csv = document.getElementById('file').files[0];
+            var reader = new FileReader();
+            reader.addEventListener('load', function (e) {
+                $(".preview").text(reader.result);
+            });
+            reader.readAsText(csv, 'shift_jis');
+        }
+    };
+
     $("#button").on("click", function (e) {
         e.preventDefault();
         if (window.File) {

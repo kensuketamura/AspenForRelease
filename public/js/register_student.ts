@@ -2,6 +2,18 @@
 ///<reference path='../../typings/config/config.d.ts'/>
 
 $(function() {
+  (<any>document.getElementById('file')).onchange = function() {
+    if((<any>window).File) {
+      var csv = (<any>document.getElementById('file')).files[0];
+      var reader = new FileReader();
+      reader.addEventListener('load', function(e) {
+        $(".preview").text(reader.result);
+
+      });
+      reader.readAsText(csv, 'shift_jis');
+    }
+  }
+
   $("#button").on("click", function(e) {
     e.preventDefault();
     if((<any>window).File) {
