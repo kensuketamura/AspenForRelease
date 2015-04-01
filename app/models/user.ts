@@ -57,7 +57,15 @@ module.exports = (sequelize, DataTypes) => {
             findByStudentNumber: (studentNumber) => {
                 return User.find({where: {studentNumber: studentNumber}});
             },
-
+            /**
+             * 学生を追加する
+             * @method createStudent
+             * @param {String} name 氏名
+             * @param {String} studentNumber 学籍番号
+             * @param {String} password パスワード
+             * @param {Boolean} role_admin 管理者権限
+             * @return {Promise}
+             */
             createStudent: (name, studentNumber, password, role_admin) => {
               return User.create({
                 name: name,
