@@ -6,7 +6,18 @@ $(function () {
             var csv = document.getElementById('file').files[0];
             var reader = new FileReader();
             reader.addEventListener('load', function (e) {
-                $(".preview").text(reader.result);
+                $(".preview").css("display", "inline");
+                $("#preview-body").html("");
+                var arr = csvToArray(reader.result);
+                arr.slice(1).forEach(function (user) {
+                    $("#preview-body").append("<tr>");
+                    user.forEach(function (ele, i) {
+                        if (i == 1) {
+                            ele = ele == 1 ? "○" : "×";
+                        }
+                        $("#preview-body").append("<td>" + ele + "</td>");
+                    });
+                });
             });
             reader.readAsText(csv, 'shift_jis');
         }

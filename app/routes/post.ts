@@ -165,7 +165,6 @@ function addStudents(arr) {
   var p = db.User.createStudent(name, studentNumber, password, role_admin);
   if(arr.length > 0) {
     return p.then(function() {
-      console.log(arr)
       return addStudents(arr);
     });
   } else {

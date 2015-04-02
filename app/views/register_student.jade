@@ -2,20 +2,41 @@ extends layout
 
 block header
     // +css('/css/register.css')
+    +css('/css/index.css')
+    style.
+      .site-wrapper {
+        padding-top: 3em;
+      }
 
 block loadFiles
     +js('/js/register_student.js')
 
 block content
-  .container
-    p
-      h1 生徒情報の登録
-    br
-    form.form-horizontal
-      .form-group
-        label.col-sm-2.control-label(for="inputNumber") csvファイル
-        .col-sm-10
-          input#file.form-control(type="file", name="csvFile", required)
-        .col-sm-offset-2.col-sm-10
-          button#button.btn.btn-primary.pull-right 登録を完了する
-    .preview
+  .site-wrapper
+    .site-wrapper-inner-center-off
+      .cover-container
+        include topbar
+        .inner.cover.shadow-off
+          .inner
+            .row
+              h1 生徒情報の登録
+              br
+              form.form-inline
+                .form-group(style="margin:3px")
+                  label(for="file") csvファイル
+                  input#file.form-control(type="file", name="csvFile", style="width:auto" required)
+                .form-group(style="margin:3px")
+                button#button.btn.btn-primary 登録を完了する
+              br
+              br
+              br
+              .preview(style="display:none")
+                p.h4 追加されるユーザー
+                table.table.table-hover(id="allDataTable")
+                  thead
+                    tr
+                    - tableHead = ["名前","管理者", "学籍番号(id)", "password"]
+                    - for(var i = 0; i < tableHead.length; i++){
+                      th #{tableHead[i]}
+                    - }
+                  tbody#preview-body
