@@ -244,6 +244,22 @@ router.get('/students', function (req, res) {
     });
 });
 
+router.get('/api/submits', function (req, res) {
+    res.contentType('application/json');
+    db.Subject.getStatuses(db, 1).then(function (values) {
+        var students = values[0].map(function (student) {
+            return [student.studentNumber, student.name, student.id];
+        });
+        var subjects = values[1].map(function (subject) {
+            return [subject.id, subject.name];
+        });
+
+        var submits = createAllSubmitViews(values[2], values[0], values[1]);
+
+        res.send(JSON.stringify(submits));
+    });
+});
+
 function checkAdmin(req, res) {
     return db.User.login({ studentNumber: req.signedCookies.user_student_id }).then(function (user) {
         if (user == null) {

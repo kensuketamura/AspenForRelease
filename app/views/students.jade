@@ -19,18 +19,24 @@ block content
         .inner.cover.shadow-off
           .inner
             .row
-              table.table.table-hover(id="allDataTable")
-                thead
-                  tr
-                  - for(var i = 0; i < tableHead.length; i++){
-                    th #{tableHead[i]}
-                  - }
-                tbody
-                  - for(var i = 0; i < users.length; i++){
-                  tr()
-                    td.userInList() #{users[i].studentNumber}
-                    td.userInList() #{users[i].name}
-                    td.userInList() #{users[i].password}
-                  - }
+              .col-sm-3.block-center-off
+                p.control-panel
+                  a.btn.btn-success(href="#{basePath}/register_student") 学生の登録
+              .col-sm-9
+                table.table.table-hover(id="allDataTable")
+                  thead
+                    tr
+                    - for(var i = 0; i < tableHead.length; i++){
+                      th #{tableHead[i]}
+                    - }
+                  tbody
+                    - for(var i = 0; i < users.length; i++){
+                      - if(!users[i].deleteFlag){
+                    tr()
+                      td.userInList() #{users[i].studentNumber}
+                      td.userInList() #{users[i].name}
+                      td.userInList() #{users[i].password}
+                      - }
+                    - }
             .mastfoot
               .inner
