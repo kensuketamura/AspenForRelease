@@ -10,6 +10,7 @@ block header
 
 block loadFiles
   +js('/vendor/jquery/jquery.tablesorter.js')
+  +js('/js/subjectList.js')
 
 block content
   .site-wrapper
@@ -21,7 +22,7 @@ block content
             .row
               .col-sm-3.block-center-off
                 p.control-panel
-                  a.btn.btn-success(href="#{basePath}/register_student") 学生の新規登録
+                  a.btn.btn-success(href="#{basePath}/subject") 課題の新規作成
               .col-sm-9
                 table.table.table-hover(id="allDataTable")
                   thead
@@ -30,12 +31,11 @@ block content
                       th #{tableHead[i]}
                     - }
                   tbody
-                    - for(var i = 0; i < users.length; i++){
-                      - if(!users[i].deleteFlag){
-                    tr()
-                      td.userInList() #{users[i].studentNumber}
-                      td.userInList() #{users[i].name}
-                      td.userInList() #{users[i].password}
+                    - for(var i = 0; i < subjects.length; i++){
+                      - if(!subjects[i].deleteFlag){
+                    tr(id="#{subjects[i].id}")
+                      td.subjectInList(id="#{subjects[i].id}") #{subjects[i].name}
+                      td.subjectInList(id="#{subjects[i].id}") #{endAts[i]}
                       - }
                     - }
             .mastfoot

@@ -151,6 +151,13 @@ tr:hover > td {
           filter: brightness(90%);
 }
 
+a.register-student, a.register-subject {
+  margin-left: 10px;
+  display: none;
+  opacity: 0.0;
+  transition: all .075s cubic-bezier(.4,0,.2,1);
+}
+
 /*
  * Globals
  */

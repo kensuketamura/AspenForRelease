@@ -90,6 +90,7 @@ function OutputCSV(){
       output += "\r\n";
     }
   }
+  //出力した時刻を整形
   var date = [
     (((new Date()).getFullYear()).toString()).replace("20", ""),
     ((new Date()).getMonth()).toString(),
@@ -97,10 +98,12 @@ function OutputCSV(){
     ((new Date()).getHours()).toString(),
     ((new Date()).getMinutes()).toString(),
   ];
+  //1桁の数字には0を追加
   var dateStr = "";
   date.forEach((d)=>{
     dateStr += ((d.length < 2)? ("0" + d) : d);
   });
+  //ファイルの出力
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = new Blob([bom, output], {type:"text/csv"});
   var csvFile = document.createElement('a');

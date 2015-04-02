@@ -60,26 +60,37 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/subject/:file', function (req, res) {
-    if (!req.signedCookies.user_student_id) {
-        res.redirect(config.base.path + '/');
-        return;
-    }
-    db.Subject.find({ where: { id: req.params.file } }).then(function (subject) {
-        if (subject) {
-            res.render('subject', {
-                basePath: config.base.path,
-                content: subject.content,
-                example: subject.example,
-                endAt: formatDate("YYYY-MM-DD", subject.endAt),
-                name: subject.name ? subject.name : "",
-                is_show_content: false
-            });
-        } else {
-            throw new Error('not found');
-        }
-    }).catch(function (err) {
-        console.log(err);
-        res.status(404).send('not found.');
+    checkAdmin(req, res).then(function () {
+        db.Subject.find({ where: { id: req.params.file } }).then(function (subject) {
+            if (subject) {
+                res.render('subject', {
+                    basePath: config.base.path,
+                    content: subject.content,
+                    example: subject.example,
+                    endAt: formatDate("YYYY-MM-DD", subject.endAt),
+                    name: subject.name ? subject.name : "",
+                    is_show_content: false
+                });
+            } else {
+                throw new Error('not found');
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.status(404).send('not found.');
+        });
+    });
+});
+
+router.get('/subjectList', function (req, res) {
+    checkAdmin(req, res).then(function () {
+        return db.Subject.getList(1);
+    }).then(function (subjects) {
+        var tableHead = ["課題名", "締切"];
+        var endAts = [];
+        subjects.forEach(function (subject) {
+            endAts.push(formatEndAt(subject.endAt));
+        });
+        res.render('subjectList', { basePath: config.base.path, subjects: subjects, endAts: endAts, tableHead: tableHead });
     });
 });
 
