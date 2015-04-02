@@ -61,7 +61,6 @@ $(function(){
       }
     }
 
-    console.log(id);
     var splitId = id.split("-");
     id = splitId[0];
 
@@ -140,7 +139,6 @@ function SearchPanelAction(id){
   }
 
   id = "#" + id + "-list";
-  console.log(id);
   $(id).slideToggle("fast", function(){
     $(id).css("overflow", "auto");
     });
