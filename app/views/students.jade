@@ -9,6 +9,7 @@ block header
     }
 
 block loadFiles
+  +js('/js/studentList.js')
   +js('/vendor/jquery/jquery.tablesorter.js')
 
 block content
@@ -22,6 +23,8 @@ block content
               .col-sm-3.block-center-off
                 p.control-panel
                   a.btn.btn-success(href="#{basePath}/register_student") 学生の新規登録
+                p.control-panel
+                  a.btn.btn-primary.output-students データの出力
               .col-sm-9
                 table.table.table-hover(id="allDataTable")
                   thead
