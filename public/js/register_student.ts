@@ -39,6 +39,7 @@ $(function() {
           data: {users: arr.slice(1)},
           success: function() {
             console.log(arrayToCSV(arr));
+            location.href = Config.basePath + '/students';
           }
         });
       });
