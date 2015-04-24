@@ -21,7 +21,7 @@ $(function(){
     var subjectId = $(this).attr("subjectId");
     var userId = $(this).attr("userId");
     window.open(Config.basePath + "/user/" + userId + "/subject/"+ subjectId, '', 'scrollbars=yes,Width=1300,Height=800');
-    $.getJSON(Config.basePath + "/api/submits", (res) => {
+    /*$.getJSON(Config.basePath + "/api/submits", (res) => {
       for(var res_i = 0; res_i < res.length; res_i++){
         for(var data_i = 0; data_i < allData.length; data_i++){
           if(res[res_i].student_number == $(allData[data_i]).attr("studentNumber") && res[res_i].id == $(allData[data_i]).attr("subjectId")){
@@ -29,7 +29,7 @@ $(function(){
           }
         }
       }
-    });
+    });*/
   });
 
   $(".search-panel-group > span").bind("click", function(){
